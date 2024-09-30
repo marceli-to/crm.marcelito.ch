@@ -55,6 +55,6 @@ new class extends Component {
   <flux:input label="City" wire:model="city" />
   <div class="flex">
     <flux:spacer />
-    <flux:button type="submit" variant="primary">Save</flux:button>
+    <flux:button type="submit" variant="primary">Save Company</flux:button>
   </div>
 </form>

@@ -80,8 +80,8 @@ new class extends Component {
                     $q->where('name', 'like', '%' . $this->search . '%');
                 });
         })
-        ->orderBy($this->sortBy, $this->sortDirection)
-      ->paginate(25);
+      ->orderBy($this->sortBy, $this->sortDirection)
+      ->paginate(15);
   }
 
   #[On('company_stored')]
@@ -117,7 +117,7 @@ new class extends Component {
   {
     return Project::query()
         ->tap(fn ($query) => $this->sortBy ? $query->orderBy($this->sortBy, $this->sortDirection) : $query)
-        ->paginate(25);
+        ->paginate(15);
   }
   
 }; ?>
@@ -185,7 +185,7 @@ new class extends Component {
       </div>
       <div class="flex">
         <flux:spacer />
-        <flux:button type="submit" variant="primary">Save changes</flux:button>
+        <flux:button type="submit" variant="primary">Save Project</flux:button>
       </div>
     </form>
   </flux:modal>
