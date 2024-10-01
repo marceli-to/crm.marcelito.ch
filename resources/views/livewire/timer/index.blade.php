@@ -79,8 +79,10 @@ new class extends Component {
   public function getDailyTotal($entries)
   {
     $total = $entries->sum('duration');
-    // make it humanized, add minutes only if more than 0
-    return floor($total / 60) . 'h ' . ($total % 60 ? ($total % 60) . 'm' : '');
+    return [
+      'color' => $total > 360 ? 'lime' : 'amber',
+      'label' => floor($total / 60) . 'h ' . ($total % 60 ? ($total % 60) . 'm' : ''),
+    ];
   }
 
   #[Computed]
@@ -111,31 +113,28 @@ new class extends Component {
   </div>
 
   @foreach ($this->entries as $day => $entries)
-    <flux:heading class="!mt-0 flex justify-between" size="lg">
+    <flux:heading class="!mt-0 flex justify-between">
+      <div>{{ date('Y-m-d', strtotime($day)) === date('Y-m-d') ? 'Today' : date('l, j.m.Y', strtotime($day)) }}</div>
       <div>
-        @if (date('Y-m-d', strtotime($day)) === date('Y-m-d'))
-          Today
-        @else
-          {{ date('l, j.m.Y', strtotime($day)) }}
-        @endif
-      </div>
-      <div>{{ $this->getDailyTotal($entries) }}</div>
+        <flux:badge size="sm" inset="top bottom" color="{{ $this->getDailyTotal($entries)['color'] }}">
+        {{ $this->getDailyTotal($entries)['label'] }}
+      </flux:badge></div>
     </flux:heading>
-    <flux:table class="mt-2 mb-12 border-y border-t-2 border-b-zinc-200 border-t-zinc-200">
+    <flux:table class="mt-2 mb-12 border-t border-t-zinc-200">
       <flux:rows>
         @foreach ($entries as $entry)
-          <flux:row :key="$entry->id">
+          <flux:row :key="$entry->id" class="!border-0 {{ $loop->even ? 'bg-zinc-50' : '' }}">
             <flux:cell variant="strong" class="w-1/4">
               {{ $entry->description }}
             </flux:cell>
             <flux:cell class="w-1/2">
               {{ $entry->project->name }}
-              <span class="text-xs text-gray-300 mx-1">&bull;</span>
+              <span class="text-xs text-zinc-300 mx-1">&bull;</span>
               {{ $entry->project->company->name }}
             </flux:cell>
             <flux:cell class="hidden md:table-cell">
               {{ $entry->time_start->format('H:i') }}
-              <span class="text-x">&ndash;</span>
+              <span class="text-xs text-zinc-500">&ndash;</span>
               {{ $entry->time_end->format('H:i') }}
             </flux:cell>
             <flux:cell class="text-right">{{ $entry->humanized_duration }}</flux:cell>
