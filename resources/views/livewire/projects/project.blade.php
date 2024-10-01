@@ -14,7 +14,6 @@ new class extends Component {
   #[Rule('string|required')]
   public $name;
 
-
   #[Rule('string|nullable')]
   public $budget;
 

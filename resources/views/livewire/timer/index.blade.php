@@ -5,6 +5,8 @@ use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
 use Livewire\WithPagination;
 use App\Models\Project;
+use App\Models\Company;
+use App\Models\Timer;
 
 new class extends Component {
 
@@ -12,16 +14,91 @@ new class extends Component {
 
   public $projects;
 
+  public $companies;
+
+  public $is_not_today = false;
+
+  #[Rule('required|boolean')]
+  public $is_billable = true;
+
+  #[Rule('required')]
+  public $description;
+
+  #[Rule('required_if:is_not_today,true')]
+  public $date;
+
+  #[Rule('required')]
+  public $time_start;
+
+  #[Rule('required')]
+  public $time_end;
+
+  #[Rule('exists:companies,id')]
+  public $company_id;
+
+  #[Rule('exists:projects,id')]
+  public $project_id;
+
   public function mount()
   {
-    $this->projects = Project::orderBy('created_at', 'desc')->get();
+    $this->companies = Company::has('activeProjects')->orderBy('name')->get();
+
+  }
+
+  public function save()
+  {
+    $this->validate();
+    $entry = Timer::create([
+      'description' => $this->description,
+      'date' => $this->is_not_today ? $this->date : now()->format('Y-m-d'),
+      'time_start' => $this->time_start,
+      'time_end' => $this->time_end,
+      'is_billable' => $this->is_billable,
+      'company_id' => $this->company_id,
+      'project_id' => $this->project_id,
+    ]);
+
+    $this->reset('description', 'date', 'time_start', 'time_end', 'company_id', 'project_id');
+    $this->modal('entry-create')->close();
+  }
+
+  public function getProjects()
+  {
+    $this->projects = Project::where('company_id', $this->company_id)
+      ->active()
+      ->orderBy('created_at', 'desc')
+      ->get();
+
+    // Set the project_id if there is only one project
+    if ($this->projects->count() === 1)
+    {
+      $this->project_id = $this->projects->first()->id;
+    }
+  }
+
+  public function getDailyTotal($entries)
+  {
+    $total = $entries->sum('duration');
+    // make it humanized
+    return floor($total / 60) . 'h ' . ($total % 60) . 'm';
+  }
+
+  #[Computed]
+  public function entries()
+  {
+    $entries = Timer::with('project.company')
+      ->orderBy('date', 'desc')
+      ->orderBy('time_start', 'desc')
+      ->get();
+
+    return $entries->groupBy('date');
   }
 };
 ?>
 
 <div class="max-w-5xl">
 
-  <div class="flex flex-col md:flex-row space-y-6 md:space-y-0 md:justify-between md:items-center">
+  <div class="flex flex-col md:flex-row mb-12 space-y-6 md:space-y-0 md:justify-between md:items-center">
     <div>
       <flux:heading size="xl">Timer</flux:heading>
       <flux:subheading>Keep track of your daily tasks</flux:subheading>
@@ -33,35 +110,75 @@ new class extends Component {
     </div>
   </div>
 
-  {{-- <flux:table class="mt-6" :paginate="$this->entries">
-    <flux:columns>
-      <flux:column>Description</flux:column>
-      <flux:column>Project</flux:column>
-      <flux:column>Duration</flux:column>
-    </flux:columns>
-    <flux:rows>
-      @foreach ($this->entries as $entry)
-      @endforeach
-    </flux:rows>
-  </flux:table> --}}
+  @foreach ($this->entries as $day => $entries)
+    <flux:heading class="!mt-0 flex justify-between" size="lg">
+      <div>{{ strftime('%d. %B %Y', strtotime($day)) }}</div>
+      <div>{{ $this->getDailyTotal($entries) }}</div>
+    </flux:heading>
+    <flux:table class="mt-2 mb-12 border-y border-t-2 border-b-gray-200 border-t-gray-100">
+      <flux:rows>
+        @foreach ($entries as $entry)
+          <flux:row :key="$entry->id">
+            <flux:cell variant="strong" class="w-1/4">
+              {{ $entry->description }}
+            </flux:cell>
+            <flux:cell class="w-1/2">
+              {{ $entry->project->name }}
+              <span class="text-xs text-gray-300 mx-1">&bull;</span>
+              {{ $entry->project->company->name }}
+            </flux:cell>
+            <flux:cell class="hidden md:table-cell">
+              {{ $entry->time_start->format('H:i') }}
+              <span class="text-x">&ndash;</span>
+              {{ $entry->time_end->format('H:i') }}
+            </flux:cell>
+            <flux:cell class="text-right">{{ $entry->humanized_duration }}</flux:cell>
+          </flux:row>
+        @endforeach
+      </flux:rows>
+    </flux:table>
+  @endforeach
 
   <flux:modal name="entry-create" variant="flyout" class="max-w-md">
     <form wire:submit="save" class="space-y-6">
+
       <div>
         <flux:heading size="lg">Create Entry</flux:heading>
         <flux:subheading>Track a new task.</flux:subheading>
       </div>
-      <flux:input label="Description" wire:model="description" />
-      <flux:input label="Date" wire:model="date" type="date" />
-      <div class="flex justify-between gap-x-6">
-        <flux:input label="Start" wire:model="time_start" type="time" class="w-44" />
-        <flux:input label="End" wire:model="time_end" type="time" class="w-44" />
+
+      <div class="my-10">
+        <flux:switch wire:model="is_billable" label="Billable?" description="Exclude entries from being billed." />
       </div>
-      <flux:select label="Project" wire:model="project_id" placeholder="Choose project...">
-        @foreach ($projects as $project)
-          <option value="{{ $project->id }}">{{ $project->name }}</option>
+
+      <div class="my-10">
+        <flux:switch wire:model.live="is_not_today" label="Not today?" description="Create entry for a different day." />
+      </div>
+
+      <flux:input label="Description" wire:model="description" />
+
+      <flux:select label="Company" wire:model="company_id" wire:change="getProjects" placeholder="Choose company...">
+        @foreach ($companies as $company)
+          <option value="{{ $company->id }}">{{ $company->name }}</option>
         @endforeach
       </flux:select>
+
+      @if ($company_id)
+        <flux:select label="Project" wire:model="project_id">
+          @foreach ($projects as $project)
+            <option value="{{ $project->id }}">{{ $project->name }}</option>
+          @endforeach
+        </flux:select>
+      @endif
+
+      @if ($is_not_today)
+        <flux:input label="Date" wire:model="date" type="date" />
+      @endif
+
+      <div class="flex justify-between gap-x-6">
+        <flux:input label="Start" wire:model="time_start" type="time" class="!w-44" />
+        <flux:input label="End" wire:model="time_end" type="time" class="!w-44" />
+      </div>
       <div class="flex">
         <flux:spacer />
         <flux:button type="submit" variant="primary">Save entry</flux:button>

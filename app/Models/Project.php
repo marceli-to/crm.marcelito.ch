@@ -27,4 +27,9 @@ class Project extends Model
   {
     return $this->belongsTo(Company::class);
   }
+
+  public function scopeActive($query)
+  {
+    return $query->whereNull('archived_at');
+  }
 }

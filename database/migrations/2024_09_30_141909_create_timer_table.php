@@ -16,7 +16,7 @@ return new class extends Migration
       $table->date('date');
       $table->time('time_start');
       $table->time('time_end');
-      $table->boolean('is_billable');
+      $table->boolean('is_billable')->default(true);
       $table->foreignId('project_id')->constrained('projects');
       $table->timestamps();
     });

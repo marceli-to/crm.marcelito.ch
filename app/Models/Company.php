@@ -18,4 +18,10 @@ class Company extends Model
   {
     return $this->hasMany(Project::class);
   }
+
+  // relationship for active projects
+  public function activeProjects()
+  {
+    return $this->hasMany(Project::class)->whereNull('archived_at');
+  }
 }
