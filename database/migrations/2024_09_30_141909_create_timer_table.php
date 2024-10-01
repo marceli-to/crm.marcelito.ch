@@ -12,7 +12,7 @@ return new class extends Migration
   {
     Schema::create('timer', function (Blueprint $table) {
       $table->id();
-      $table->string('description');
+      $table->string('task');
       $table->date('date');
       $table->time('time_start');
       $table->time('time_end');

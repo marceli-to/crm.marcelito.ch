@@ -70,7 +70,6 @@ new class extends Component {
   public function get()
   {
     $this->projects = Project::query()
-      ->with('company', 'principal')
       ->when($this->search !== null, function ($query) {
             return $query->where('name', 'like', '%' . $this->search . '%')
                 ->orWhereHas('company', function ($q) {

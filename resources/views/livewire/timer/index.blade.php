@@ -3,14 +3,11 @@ use Livewire\Volt\Component;
 use Livewire\Attributes\Rule;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
-use Livewire\WithPagination;
 use App\Models\Project;
 use App\Models\Company;
 use App\Models\Timer;
 
 new class extends Component {
-
-  use WithPagination;
 
   public $projects;
 
@@ -60,6 +57,7 @@ new class extends Component {
 
     $this->reset('description', 'date', 'time_start', 'time_end', 'company_id', 'project_id');
     $this->modal('entry-create')->close();
+    $this->refresh();
   }
 
   public function getProjects()
@@ -80,21 +78,33 @@ new class extends Component {
   {
     $total = $entries->sum('duration');
     return [
-      'color' => $total > 360 ? 'lime' : 'amber',
+      'color' => $total > 360 ? 'lime' : 'red',
       'label' => floor($total / 60) . 'h ' . ($total % 60 ? ($total % 60) . 'm' : ''),
     ];
+  }
+
+  public function remove($id)
+  {
+    Timer::find($id)->delete();
+    $this->refresh();
+  }
+
+  #[On('entry_updated')]
+  public function refresh()
+  {
+    redirect()->route('timer');
   }
 
   #[Computed]
   public function entries()
   {
-    $entries = Timer::with('project.company')
+    return Timer::with('project.company')
       ->orderBy('date', 'desc')
       ->orderBy('time_start', 'desc')
-      ->get();
-
-    return $entries->groupBy('date');
+      ->get()
+      ->groupBy('date');
   }
+
 };
 ?>
 
@@ -112,33 +122,19 @@ new class extends Component {
     </div>
   </div>
 
-  @foreach ($this->entries as $day => $entries)
+  @foreach ($this->entries as $day => $entriesByDay)
     <flux:heading class="!mt-0 flex justify-between">
-      <div>{{ date('Y-m-d', strtotime($day)) === date('Y-m-d') ? 'Today' : date('l, j.m.Y', strtotime($day)) }}</div>
+      <div class="text-zinc-500">{{ date('Y-m-d', strtotime($day)) === date('Y-m-d') ? 'Today' : date('l, j.m.Y', strtotime($day)) }}</div>
       <div>
-        <flux:badge size="sm" inset="top bottom" color="{{ $this->getDailyTotal($entries)['color'] }}">
-        {{ $this->getDailyTotal($entries)['label'] }}
-      </flux:badge></div>
+        <flux:badge size="sm" inset="top bottom" color="{{ $this->getDailyTotal($entriesByDay)['color'] }}">
+          {{ $this->getDailyTotal($entriesByDay)['label'] }}
+        </flux:badge>
+      </div>
     </flux:heading>
-    <flux:table class="mt-2 mb-12 border-t border-t-zinc-200">
+    <flux:table class="mt-4 mb-12 border-y border-zinc-200">
       <flux:rows>
-        @foreach ($entries as $entry)
-          <flux:row :key="$entry->id" class="!border-0 {{ $loop->even ? 'bg-zinc-50' : '' }}">
-            <flux:cell variant="strong" class="w-1/4">
-              {{ $entry->description }}
-            </flux:cell>
-            <flux:cell class="w-1/2">
-              {{ $entry->project->name }}
-              <span class="text-xs text-zinc-300 mx-1">&bull;</span>
-              {{ $entry->project->company->name }}
-            </flux:cell>
-            <flux:cell class="hidden md:table-cell">
-              {{ $entry->time_start->format('H:i') }}
-              <span class="text-xs text-zinc-500">&ndash;</span>
-              {{ $entry->time_end->format('H:i') }}
-            </flux:cell>
-            <flux:cell class="text-right">{{ $entry->humanized_duration }}</flux:cell>
-          </flux:row>
+        @foreach ($entriesByDay as $entry)
+          <livewire:timer.entry :entry="$entry" :key="$entry->id" />
         @endforeach
       </flux:rows>
     </flux:table>
@@ -157,10 +153,10 @@ new class extends Component {
       </div>
 
       <div class="my-10">
-        <flux:switch wire:model.live="is_not_today" label="Not today?" description="Create entry for a different day." />
+        <flux:switch wire:model.live="is_not_today" label="Not today?" description="Set entry date to a different day." />
       </div>
 
-      <flux:input label="Description" wire:model="description" />
+      <flux:input label="Task" wire:model="task" />
 
       <flux:select label="Company" wire:model="company_id" wire:change="getProjects" placeholder="Choose company...">
         @foreach ($companies as $company)
@@ -175,7 +171,7 @@ new class extends Component {
           @endforeach
         </flux:select>
       @endif
-
+        
       @if ($is_not_today)
         <flux:input label="Date" wire:model="date" type="date" />
       @endif
@@ -184,6 +180,7 @@ new class extends Component {
         <flux:input label="Start" wire:model="time_start" type="time" class="!w-44" />
         <flux:input label="End" wire:model="time_end" type="time" class="!w-44" />
       </div>
+
       <div class="flex">
         <flux:spacer />
         <flux:button type="submit" variant="primary">Save entry</flux:button>

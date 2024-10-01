@@ -7,7 +7,7 @@ class Timer extends Model
   protected $table = 'timer';
 
   protected $fillable = [
-    'description',
+    'task',
     'date',
     'time_start',
     'time_end',
@@ -42,31 +42,6 @@ class Timer extends Model
       }
       return floor($this->duration / 60) . 'h';
     }
-
-    // todo: get difference between time_end and time_start in minutes.
-    // if its more than 60, return the difference in hours and minutes.
-    // if its less than 60, return the difference in minutes.
-    // if its 0, return 0.
-    // $start = \Carbon\Carbon::parse($this->time_start);
-    // $end = \Carbon\Carbon::parse($this->time_end);
-    // $diff = $start->diffInMinutes($end);
-    // if ($diff > 60)
-    // {
-    //   // get hours and minutes
-    //   $hours = floor($diff / 60);
-    //   $minutes = $diff % 60;
-
-    //   // show minutes only if its more than 0
-    //   if ($minutes > 0)
-    //   {
-    //     return $hours . 'h ' . $minutes . 'm';
-    //   }
-    //   return $hours . 'h';
-    // } 
-    // else
-    // {
-    //   return $diff . 'm';
-    // }
   }
 
   public function project()
