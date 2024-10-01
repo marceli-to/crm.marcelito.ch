@@ -35,8 +35,8 @@ new class extends Component {
       'zip' => $this->zip,
       'city' => $this->city,
     ]);
-    $this->reset('name', 'acronym', 'city');
-    $this->dispatch('company_stored');
+    $this->reset('name', 'acronym', 'city', 'zip', 'street', 'byline');
+    $this->dispatch('company_created');
     Flux::modal('company-create')->close();
   }
 };

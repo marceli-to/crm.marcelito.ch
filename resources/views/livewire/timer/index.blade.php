@@ -9,17 +9,13 @@ use App\Models\Timer;
 
 new class extends Component {
 
-  public $projects;
-
-  public $companies;
-
   public $is_not_today = false;
 
   #[Rule('required|boolean')]
   public $is_billable = true;
 
   #[Rule('required')]
-  public $description;
+  public $task;
 
   #[Rule('required_if:is_not_today,true')]
   public $date;
@@ -36,42 +32,21 @@ new class extends Component {
   #[Rule('exists:projects,id')]
   public $project_id;
 
-  public function mount()
-  {
-    $this->companies = Company::has('activeProjects')->orderBy('name')->get();
-  }
-
   public function save()
   {
     $this->validate();
     $entry = Timer::create([
-      'description' => $this->description,
+      'task' => $this->task,
       'date' => $this->is_not_today ? $this->date : now()->format('Y-m-d'),
       'time_start' => $this->time_start,
       'time_end' => $this->time_end,
       'duration' => \Carbon\Carbon::parse($this->time_start)->diffInMinutes(\Carbon\Carbon::parse($this->time_end)),
       'is_billable' => $this->is_billable,
-      'company_id' => $this->company_id,
       'project_id' => $this->project_id,
     ]);
 
-    $this->reset('description', 'date', 'time_start', 'time_end', 'company_id', 'project_id');
+    $this->reset('task', 'date', 'time_start', 'time_end', 'company_id', 'project_id');
     $this->modal('entry-create')->close();
-    $this->refresh();
-  }
-
-  public function getProjects()
-  {
-    $this->projects = Project::where('company_id', $this->company_id)
-      ->active()
-      ->orderBy('created_at', 'desc')
-      ->get();
-
-    // Set the project_id if there is only one project
-    if ($this->projects->count() === 1)
-    {
-      $this->project_id = $this->projects->first()->id;
-    }
   }
 
   public function getDailyTotal($entries)
@@ -86,23 +61,35 @@ new class extends Component {
   public function remove($id)
   {
     Timer::find($id)->delete();
-    $this->refresh();
-  }
-
-  #[On('entry_updated')]
-  public function refresh()
-  {
-    redirect()->route('timer');
   }
 
   #[Computed]
   public function entries()
-  {
+  { 
     return Timer::with('project.company')
       ->orderBy('date', 'desc')
       ->orderBy('time_start', 'desc')
-      ->get()
-      ->groupBy('date');
+      ->get();
+  }
+
+  #[Computed]
+  public function companies()
+  {
+    return Company::has('activeProjects')->orderBy('name')->get();
+  }
+
+  #[Computed]
+  #[On('company_changed')]
+  public function projects()
+  {
+    $data = Project::where('company_id', $this->company_id)
+      ->active()
+      ->orderBy('created_at', 'desc')
+      ->get();
+
+    // Set the project_id to the first possible project
+    $this->project_id = $data->first()->id;
+    return $data;
   }
 
 };
@@ -122,9 +109,11 @@ new class extends Component {
     </div>
   </div>
 
-  @foreach ($this->entries as $day => $entriesByDay)
+  @foreach ($this->entries->groupBy('date') as $day => $entriesByDay)
     <flux:heading class="!mt-0 flex justify-between">
-      <div class="text-zinc-500">{{ date('Y-m-d', strtotime($day)) === date('Y-m-d') ? 'Today' : date('l, j.m.Y', strtotime($day)) }}</div>
+      <div class="text-zinc-500">
+        {{ date('Y-m-d', strtotime($day)) === date('Y-m-d') ? 'Today' : date('l, j.m.Y', strtotime($day)) }}
+      </div>
       <div>
         <flux:badge size="sm" inset="top bottom" color="{{ $this->getDailyTotal($entriesByDay)['color'] }}">
           {{ $this->getDailyTotal($entriesByDay)['label'] }}
@@ -158,15 +147,15 @@ new class extends Component {
 
       <flux:input label="Task" wire:model="task" />
 
-      <flux:select label="Company" wire:model="company_id" wire:change="getProjects" placeholder="Choose company...">
-        @foreach ($companies as $company)
+      <flux:select label="Company" wire:model="company_id" wire:change="dispatch('company_changed')" placeholder="Choose company...">
+        @foreach ($this->companies as $company)
           <option value="{{ $company->id }}">{{ $company->name }}</option>
         @endforeach
       </flux:select>
 
       @if ($company_id)
         <flux:select label="Project" wire:model="project_id">
-          @foreach ($projects as $project)
+          @foreach ($this->projects as $project)
             <option value="{{ $project->id }}">{{ $project->name }}</option>
           @endforeach
         </flux:select>

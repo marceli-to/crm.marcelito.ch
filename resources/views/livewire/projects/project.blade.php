@@ -46,7 +46,7 @@ new class extends Component {
     $this->getRates();
   }
 
-  #[On('company_stored')]
+  #[On('company_created')]
   public function getCompanies()
   {
     $this->modal('company-create-'. $this->project->id)->close();

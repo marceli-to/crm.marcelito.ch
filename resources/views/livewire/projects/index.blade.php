@@ -11,8 +11,6 @@ new class extends Component {
 
   use WithPagination;
 
-  public $companies;
-
   public $project;
 
   public $sortBy = 'created_at';
@@ -26,7 +24,7 @@ new class extends Component {
   public $budget;
 
   #[Rule('boolean|required')]
-  public $is_collection;
+  public $is_collection = false;
 
   #[Rule('required')]
   public $company_id;
@@ -36,21 +34,14 @@ new class extends Component {
   
   public $search = null;
 
-  public function mount()
-  {
-    $this->get();
-    $this->getCompanies();
-  }
-
   public function updatedSearch()
   {
-    $this->get();
+    $this->gotoPage(1);
   }
 
   public function resetSearch()
   {
     $this->search = null;
-    $this->get();
   }
 
   public function sort($column)
@@ -67,29 +58,6 @@ new class extends Component {
     $this->get();
   }
 
-  public function get()
-  {
-    $this->projects = Project::query()
-      ->when($this->search !== null, function ($query) {
-            return $query->where('name', 'like', '%' . $this->search . '%')
-                ->orWhereHas('company', function ($q) {
-                    $q->where('name', 'like', '%' . $this->search . '%');
-                })
-                ->orWhereHas('principal', function ($q) {
-                    $q->where('name', 'like', '%' . $this->search . '%');
-                });
-        })
-      ->orderBy($this->sortBy, $this->sortDirection)
-      ->paginate(15);
-  }
-
-  #[On('company_stored')]
-  public function getCompanies()
-  {
-    $this->modal('company-create')->close();
-    $this->companies = Company::orderBy('name')->get();
-  }
-
   public function save()
   {
     $this->validate();
@@ -100,25 +68,45 @@ new class extends Component {
       'company_id' => $this->company_id,
       'principal_id' => $this->principal_id,
     ]);
-    $this->reset('name', 'description', 'budget', 'is_collection', 'company_id', 'principal_id');
+    $this->reset('name', 'budget', 'is_collection', 'company_id', 'principal_id');
     $this->modal('project-create')->close();
-    $this->get();
   }
 
   public function remove($id)
   {
     Project::find($id)->delete();
-    $this->get();
+  }
+
+  #[On('company_created')]
+  public function setCompany()
+  {
+    $company = Company::latest()->first();
+    $this->company_id = $company->id;
+    $this->principal_id = $company->id;
   }
 
   #[Computed]
   public function projects()
   {
     return Project::query()
-        ->tap(fn ($query) => $this->sortBy ? $query->orderBy($this->sortBy, $this->sortDirection) : $query)
-        ->paginate(15);
+      ->tap(fn ($query) => $this->sortBy ? $query->orderBy($this->sortBy, $this->sortDirection) : $query)
+      ->when($this->search !== null, function ($query) {
+        return $query->where('name', 'like', '%' . $this->search . '%')
+          ->orWhereHas('company', function ($q) {
+            $q->where('name', 'like', '%' . $this->search . '%');
+          })
+          ->orWhereHas('principal', function ($q) {
+            $q->where('name', 'like', '%' . $this->search . '%');
+          });
+      })
+      ->paginate(15);
   }
-  
+
+  #[Computed]
+  public function companies()
+  {
+    return Company::orderBy('name')->get();
+  }
 }; ?>
 
 
@@ -132,7 +120,7 @@ new class extends Component {
     <div class="flex gap-x-6">
       <flux:input size="sm" wire:model.live.debounce.300ms="search" placeholder="Search...">
         <x-slot name="iconTrailing">
-          <flux:button size="xs" variant="subtle" inset="right" icon="x-mark" wire:click="resetSearch" />
+          <flux:button size="xs" variant="subtle" icon="x-mark" inset="right" wire:click="resetSearch" />
         </x-slot>
       </flux:input>
       <flux:modal.trigger name="project-create">
@@ -172,13 +160,13 @@ new class extends Component {
           </div>
         </flux:modal.trigger>
         <flux:select label="Company" wire:model="company_id" placeholder="Choose company...">
-          @foreach ($companies as $company)
-            <option value="{{ $company->id }}">{{ $company->name }}</option>
+          @foreach ($this->companies as $company)
+            <option value="{{ $company->id }}" {{ $company->id === $this->company_id ? 'selected' : '' }}>{{ $company->name }}</option>
           @endforeach
         </flux:select>
         <flux:select label="Principal" wire:model="principal_id" placeholder="Choose principal...">
-          @foreach ($companies as $company)
-            <option value="{{ $company->id }}">{{ $company->name }}</option>
+          @foreach ($this->companies as $company)
+            <option value="{{ $company->id }}" {{ $company->id === $this->principal_id ? 'selected' : '' }}>{{ $company->name }}</option>
           @endforeach
         </flux:select>
       </div>

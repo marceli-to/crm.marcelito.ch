@@ -2,6 +2,7 @@
 use Livewire\Volt\Component;
 use Livewire\Attributes\Rule;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Computed;
 use App\Models\Timer;
 use App\Models\Company;
 use App\Models\Project;
@@ -9,10 +10,6 @@ use App\Models\Project;
 new class extends Component {
 
   public Timer $entry;
-
-  public $companies;
-
-  public $projects;
 
   public $is_not_today = false;
 
@@ -47,8 +44,6 @@ new class extends Component {
     $this->project_id = $this->entry->project_id;
     $this->is_billable = $this->entry->is_billable;
     $this->is_not_today = $this->entry->date->format('Y-m-d') !== now()->format('Y-m-d');
-    $this->companies = Company::has('activeProjects')->orderBy('name')->get();
-    $this->projects =  Project::where('company_id', $this->company_id)->active()->orderBy('created_at', 'desc')->get();
   }
 
   public function update()
@@ -61,7 +56,6 @@ new class extends Component {
       'time_start' => $this->time_start,
       'time_end' => $this->time_end,
       'duration' => \Carbon\Carbon::parse($this->time_start)->diffInMinutes(\Carbon\Carbon::parse($this->time_end)),
-      'company_id' => $this->company_id,
       'project_id' => $this->project_id,
       'is_billable' => $this->is_billable,
       'is_not_today' => $this->is_not_today,
@@ -86,9 +80,17 @@ new class extends Component {
     $this->modal('entry-remove')->show();
   }
 
-  public function getProjects()
+  #[Computed]
+  #[On('entry_company_changed')]
+  public function projects()
   {
-    $this->projects = Project::where('company_id', $this->company_id)->get();
+    return Project::where('company_id', $this->company_id)->active()->orderBy('created_at', 'desc')->get();
+  }
+
+  #[Computed]
+  public function companies()
+  {
+    return Company::has('activeProjects')->orderBy('name')->get();
   }
 
 };
@@ -159,14 +161,14 @@ new class extends Component {
   
         <flux:input label="Task" wire:model="task" />
   
-        <flux:select label="Company" wire:model="company_id" wire:change="getProjects" placeholder="Choose company...">
-          @foreach ($companies as $company)
+        <flux:select label="Company" wire:model="company_id" wire:change="dispatch('entry_company_changed')" placeholder="Choose company...">
+          @foreach ($this->companies as $company)
             <option value="{{ $company->id }}">{{ $company->name }}</option>
           @endforeach
         </flux:select>
   
         <flux:select label="Project" wire:model="project_id">
-          @foreach ($projects as $project)
+          @foreach ($this->projects as $project)
             <option value="{{ $project->id }}">{{ $project->name }}</option>
           @endforeach
         </flux:select>

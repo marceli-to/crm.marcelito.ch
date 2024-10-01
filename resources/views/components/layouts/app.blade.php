@@ -24,10 +24,10 @@
       <x-icons.brand class="w-40 h-auto my-3 ml-2" />
 
       <flux:navlist variant="outline" class="space-y-2">
-        <flux:navlist.item class="py-4" icon="home" href="#">Home</flux:navlist.item>
-        <flux:navlist.item class="py-4" icon="clock" href="/timer">Timer</flux:navlist.item>
-        <flux:navlist.item class="py-4" icon="building-storefront" href="/companies">Companies</flux:navlist.item>
-        <flux:navlist.item class="py-4" icon="wrench-screwdriver" href="/projects">Projects</flux:navlist.item>
+        <flux:navlist.item icon="home" href="#">Home</flux:navlist.item>
+        <flux:navlist.item icon="clock" href="/timer">Timer</flux:navlist.item>
+        <flux:navlist.item icon="building-storefront" href="/companies">Companies</flux:navlist.item>
+        <flux:navlist.item icon="wrench-screwdriver" href="/projects">Projects</flux:navlist.item>
 
 
         {{-- <flux:navlist.group expandable heading="Favorites" class="hidden lg:grid">

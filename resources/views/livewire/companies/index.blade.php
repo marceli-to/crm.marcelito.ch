@@ -2,13 +2,13 @@
 use Livewire\Volt\Component;
 use Livewire\Attributes\Rule;
 use Livewire\Attributes\On;
+use Livewire\Attributes\Computed;
+use Livewire\WithPagination;
 use App\Models\Company;
 
 new class extends Component {
 
-  public $companies;
-
-  public $company;
+  use WithPagination;
 
   public $sortBy = 'name';
 
@@ -16,20 +16,14 @@ new class extends Component {
 
   public $search = null;
 
-  public function mount()
-  {
-    $this->get();
-  }
-
   public function updatedSearch()
   {
-    $this->get();
+    $this->gotoPage(1);
   }
 
   public function resetSearch()
   {
     $this->search = null;
-    $this->get();
   }
 
   public function sort($column)
@@ -43,21 +37,25 @@ new class extends Component {
       $this->sortBy = $column;
       $this->sortDirection = 'asc';
     }
-    $this->get();
-  }
-
-  public function get()
-  {
-    $this->companies = Company::query()
-      ->when($this->search !== null, fn ($query) => $query->where('name', 'like', '%'. $this->search .'%'))
-      ->orderBy($this->sortBy, $this->sortDirection)
-      ->get();
   }
 
   public function remove($id)
   {
     Company::find($id)->delete();
-    $this->get();
+    $this->gotoPage(1);
+    $this->search = null;
+  }
+
+  #[Computed]
+  #[On('company_created')]
+  public function companies()
+  {
+    return Company::query()
+      ->tap(fn ($query) => $this->sortBy ? $query->orderBy($this->sortBy, $this->sortDirection) : $query)
+      ->when($this->search !== null, fn ($query) => $query->where('name', 'like', '%'. $this->search .'%')
+        ->orWhere('acronym', 'like', '%'. $this->search .'%')
+        ->orWhere('city', 'like', '%'. $this->search .'%'))
+      ->paginate(15);
   }
 
 };
@@ -73,7 +71,7 @@ new class extends Component {
     <div class="flex gap-x-6">
       <flux:input size="sm" wire:model.live.debounce.300ms="search" placeholder="Search...">
         <x-slot name="iconTrailing">
-          <flux:button size="xs" variant="subtle" inset="right" icon="x-mark" wire:click="resetSearch" />
+          <flux:button size="xs" variant="subtle" icon="x-mark" inset="right" wire:click="resetSearch" />
         </x-slot>
       </flux:input>
       <flux:modal.trigger name="company-create">
@@ -82,14 +80,14 @@ new class extends Component {
       </div>
   </div>
 
-  <flux:table class="mt-6">
+  <flux:table class="mt-6" :paginate="$this->companies">
     <flux:columns>
       <flux:column class="pl-2" sortable :sorted="$sortBy === 'name'" :direction="$sortDirection" wire:click="sort('name')">Name</flux:column>
       <flux:column sortable :sorted="$sortBy === 'acronym'" :direction="$sortDirection" wire:click="sort('acronym')">Acronym</flux:column>
       <flux:column sortable :sorted="$sortBy === 'city'" :direction="$sortDirection" wire:click="sort('city')">City</flux:column>
     </flux:columns>
     <flux:rows>
-      @foreach ($companies as $company)
+      @foreach ($this->companies as $company)
         <livewire:companies.company :company="$company" :key="$company->id" />
       @endforeach
     </flux:rows>
