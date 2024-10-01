@@ -55,7 +55,6 @@ new class extends Component {
       $this->sortBy = $column;
       $this->sortDirection = 'asc';
     }
-    $this->get();
   }
 
   public function save()
