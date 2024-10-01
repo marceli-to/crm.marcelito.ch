@@ -4,12 +4,15 @@ use Livewire\Attributes\Rule;
 use Livewire\Attributes\On;
 use App\Models\Project;
 use App\Models\Company;
+use App\Models\Rate;
 
 new class extends Component {
 
   public Project $project;
 
   public $companies;
+
+  public $rates;
 
   #[Rule('string|required')]
   public $name;
@@ -20,6 +23,8 @@ new class extends Component {
   #[Rule('boolean|required')]
   public $is_collection;
 
+  #[Rule('required')]
+  public $rate_id;
   #[Rule('required')]
   public $company_id;
 
@@ -34,9 +39,11 @@ new class extends Component {
     $this->description = $this->project->description;
     $this->budget = $this->project->budget;
     $this->is_collection = $this->project->is_collection;
+    $this->rate_id = $this->project->rate_id;
     $this->company_id = $this->project->company_id;
     $this->principal_id = $this->project->principal_id;
     $this->getCompanies();
+    $this->getRates();
   }
 
   #[On('company_stored')]
@@ -44,6 +51,11 @@ new class extends Component {
   {
     $this->modal('company-create-'. $this->project->id)->close();
     $this->companies = Company::orderBy('name')->get();
+  }
+
+  public function getRates()
+  {
+    $this->rates = Rate::orderBy('label')->get();
   }
 
   public function edit()
@@ -147,31 +159,52 @@ new class extends Component {
 
     <flux:modal name="project-edit" variant="flyout" class="max-w-md">
       <form wire:submit="update" class="space-y-6">
+        
         <div>
           <flux:heading size="lg">Edit Project</flux:heading>
           <flux:subheading>Edit the project details.</flux:subheading>
         </div>
+        
         <flux:input label="Name" wire:model="name" />
+        
         <flux:input label="Budget" wire:model="budget" description="Enter the project budget." />
+        
         <div class="my-10">
           <flux:switch wire:model.live="is_collection" label="Collection?" description="Collections are billed hourly." />
         </div>
-        <div class="relative space-y-6">
+
+        <flux:select label="Rate" description="Select the rate for the project." wire:model="rate_id" placeholder="Choose rate...">
+          @foreach ($rates as $rate)
+            <option value="{{ $rate->id }}" @if($rate->id == $rate_id) selected @endif>
+              {{ number_format($rate->label, 2, '.', '') }}
+            </option>
+          @endforeach
+        </flux:select>
+
+        <div class="relative space-y-6 !mt-12">
+          
           <flux:modal.trigger name="company-create-{{ $project->id }}">
             <div class="absolute top-0 right-0 mb-3">
               <flux:button size="sm" icon="squares-plus" variant="ghost" inset="top bottom">Create Company</flux:button>
             </div>
           </flux:modal.trigger>
+          
           <flux:select label="Company" wire:model="company_id" placeholder="Choose company...">
             @foreach ($companies as $company)
-              <option value="{{ $company->id }}" @if($company->id == $company_id) selected @endif>{{ $company->name }}</option>
+              <option value="{{ $company->id }}" @if($company->id == $company_id) selected @endif>
+                {{ $company->name }}
+              </option>
             @endforeach
           </flux:select>
+
           <flux:select label="Principal" wire:model="principal_id" placeholder="Choose principal...">
             @foreach ($companies as $company)
-              <option value="{{ $company->id }}" @if($company->id == $company_id) selected @endif>{{ $company->name }}</option>
+              <option value="{{ $company->id }}" @if($company->id == $company_id) selected @endif>
+                {{ $company->name }}
+              </option>
             @endforeach
           </flux:select>
+
         </div>
         <div class="flex">
           <flux:spacer />

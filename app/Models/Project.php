@@ -8,6 +8,7 @@ class Project extends Model
     'name',
     'budget',
     'is_collection',
+    'rate_id',
     'company_id',
     'principal_id',
     'archived_at',
@@ -17,6 +18,11 @@ class Project extends Model
   protected $casts = [
     'archived_at' => 'datetime',
   ];
+  
+  public function rate()
+  {
+    return $this->belongsTo(Rate::class);
+  }
 
   public function company()
   {

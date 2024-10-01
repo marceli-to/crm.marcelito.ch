@@ -11,6 +11,7 @@ class Timer extends Model
     'date',
     'time_start',
     'time_end',
+    'duration',
     'is_billable',
     'project_id',
   ];

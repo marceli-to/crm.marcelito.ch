@@ -42,7 +42,6 @@ new class extends Component {
   public function mount()
   {
     $this->companies = Company::has('activeProjects')->orderBy('name')->get();
-
   }
 
   public function save()
@@ -53,6 +52,7 @@ new class extends Component {
       'date' => $this->is_not_today ? $this->date : now()->format('Y-m-d'),
       'time_start' => $this->time_start,
       'time_end' => $this->time_end,
+      'duration' => \Carbon\Carbon::parse($this->time_start)->diffInMinutes(\Carbon\Carbon::parse($this->time_end)),
       'is_billable' => $this->is_billable,
       'company_id' => $this->company_id,
       'project_id' => $this->project_id,
@@ -79,8 +79,8 @@ new class extends Component {
   public function getDailyTotal($entries)
   {
     $total = $entries->sum('duration');
-    // make it humanized
-    return floor($total / 60) . 'h ' . ($total % 60) . 'm';
+    // make it humanized, add minutes only if more than 0
+    return floor($total / 60) . 'h ' . ($total % 60 ? ($total % 60) . 'm' : '');
   }
 
   #[Computed]
@@ -112,10 +112,16 @@ new class extends Component {
 
   @foreach ($this->entries as $day => $entries)
     <flux:heading class="!mt-0 flex justify-between" size="lg">
-      <div>{{ strftime('%d. %B %Y', strtotime($day)) }}</div>
+      <div>
+        @if (date('Y-m-d', strtotime($day)) === date('Y-m-d'))
+          Today
+        @else
+          {{ date('l, j.m.Y', strtotime($day)) }}
+        @endif
+      </div>
       <div>{{ $this->getDailyTotal($entries) }}</div>
     </flux:heading>
-    <flux:table class="mt-2 mb-12 border-y border-t-2 border-b-gray-200 border-t-gray-100">
+    <flux:table class="mt-2 mb-12 border-y border-t-2 border-b-zinc-200 border-t-zinc-200">
       <flux:rows>
         @foreach ($entries as $entry)
           <flux:row :key="$entry->id">
