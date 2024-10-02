@@ -13,6 +13,7 @@ class Expense extends Model
     'description',
     'currency_id',
     'amount',
+    'receipt',
   ];
 
   protected $casts = [

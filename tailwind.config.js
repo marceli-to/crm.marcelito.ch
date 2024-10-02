@@ -6,6 +6,7 @@ export default {
     "./resources/**/*.vue",
     "./vendor/livewire/flux-pro/stubs/**/*.blade.php",
     "./vendor/livewire/flux/stubs/**/*.blade.php",
+    "./resources/views/vendor/livewire-dropzone/livewire/dropzone.blade.php",
   ],
   theme: {
     extend: {

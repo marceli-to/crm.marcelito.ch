@@ -4,6 +4,8 @@ use Livewire\Attributes\Rule;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Computed;
 use Livewire\WithPagination;
+use Illuminate\Http\File;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Expense;
 use App\Models\Currency;
 
@@ -31,6 +33,9 @@ new class extends Component {
 
   #[Rule('required')] 
   public $currency_id = null;
+
+  #[Rule('required')]
+  public $receipt = null;
 
   public function mount()
   {
@@ -72,11 +77,24 @@ new class extends Component {
       'currency_id' => $this->currency_id,
     ]);
 
+    // Set the expense number
     $expense->number = date('y', time()) . '.' . str_pad($expense->id, 4, "0", STR_PAD_LEFT);
     $expense->save();
 
-    $this->reset('date', 'title', 'description', 'amount', 'currency_id');
-    $this->model('expense-create')->close();
+    // Handle file upload
+    if ($this->receipt)
+    {
+      foreach ($this->receipt as $receipt)
+      {
+        $filename = $expense->number . '.' . $receipt['extension'];
+        Storage::putFileAs('public/expenses', new File($receipt['path']), $filename);
+        $expense->receipt = $filename;
+        $expense->save();
+      }
+    }
+
+    $this->reset('date', 'title', 'description', 'amount', 'currency_id', 'receipt');
+    $this->modal('expense-create')->close();
     Flux::toast('Expense created.');
   }
 
@@ -157,6 +175,15 @@ new class extends Component {
             <option value="{{ $currency->id }}" {{ $currency->id === $this->currency_id ? 'selected' : '' }}>{{ $currency->label }}</option>
           @endforeach
         </flux:select>
+      </div>
+      <div>
+        <flux:field>
+          <flux:label>Receipt</flux:label>
+          <livewire:dropzone
+            wire:model="receipt"
+            :rules="['image','mimes:png,jpeg','max:10420']"
+            :multiple="false" />
+        </flux:field>
       </div>
       <div class="flex">
         <flux:spacer />
