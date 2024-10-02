@@ -25,6 +25,7 @@ new class extends Component {
 
   #[Rule('required')]
   public $rate_id;
+  
   #[Rule('required')]
   public $company_id;
 
