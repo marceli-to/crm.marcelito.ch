@@ -53,7 +53,7 @@ new class extends Component {
   {
     $total = $entries->sum('duration');
     return [
-      'color' => $total > 360 ? 'lime' : 'red',
+      'color' => $total > 420 ? 'lime' : 'red',
       'label' => floor($total / 60) . 'h ' . ($total % 60 ? ($total % 60) . 'm' : ''),
     ];
   }
@@ -64,6 +64,7 @@ new class extends Component {
   }
 
   #[Computed]
+  #[On('entry_updated')]
   public function entries()
   { 
     return Timer::with('project.company')

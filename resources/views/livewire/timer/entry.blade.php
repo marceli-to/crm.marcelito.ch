@@ -60,13 +60,9 @@ new class extends Component {
       'is_billable' => $this->is_billable,
       'is_not_today' => $this->is_not_today,
     ]);
-
-    $this->date = $this->entry->date;
-
+    
     Flux::toast('Your changes have been saved.');
-
     $this->modal('entry-edit')->close();
-
     $this->dispatch('entry_updated');
   }
 
@@ -101,7 +97,7 @@ new class extends Component {
     {{ $entry->task }}
   </flux:cell>
   <flux:cell class="w-1/2">
-  <flux:badge inset="top bottom" size="sm" color="sky">
+  <flux:badge inset="top bottom" size="sm" color="violet">
     {{ $entry->project->name }}
     <span class="text-xs text-zinc-500 mx-1">&bull;</span>
     {{ $entry->project->company->acronym }}

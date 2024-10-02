@@ -25,9 +25,11 @@
 
       <flux:navlist variant="outline" class="space-y-2">
         <flux:navlist.item icon="home" href="#">Home</flux:navlist.item>
+        <flux:navlist.item icon="presentation-chart-line" href="/">Dashboard</flux:navlist.item>
         <flux:navlist.item icon="clock" href="/timer">Timer</flux:navlist.item>
         <flux:navlist.item icon="building-storefront" href="/companies">Companies</flux:navlist.item>
         <flux:navlist.item icon="wrench-screwdriver" href="/projects">Projects</flux:navlist.item>
+        <flux:navlist.item icon="ticket" href="/">Expenses</flux:navlist.item>
 
 
         {{-- <flux:navlist.group expandable heading="Favorites" class="hidden lg:grid">
