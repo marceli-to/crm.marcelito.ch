@@ -4,6 +4,8 @@ use Livewire\Attributes\Rule;
 use Livewire\Attributes\Computed;
 use App\Models\Expense;
 use App\Models\Currency;
+use App\Actions\DeletedExpenseReceipt;
+use App\Actions\UploadedExpenseReceipt;
 
 new class extends Component {
 
@@ -27,6 +29,8 @@ new class extends Component {
   #[Rule('string|required')]
   public $amount;
 
+  public $receipt;
+
   public function mount()
   {
     $this->number = $this->expense->number;
@@ -35,6 +39,7 @@ new class extends Component {
     $this->description = $this->expense->description;
     $this->currency_id = $this->expense->currency_id;
     $this->amount = $this->expense->amount;
+    $this->receipt = $this->expense->receipt;
   }
 
   public function edit()
@@ -47,22 +52,41 @@ new class extends Component {
     $this->validate();
 
     $this->expense->update([
-      'number' => $this->number,
       'date' => $this->date,
       'title' => $this->title,
       'description' => $this->description,
       'currency_id' => $this->currency_id,
       'amount' => $this->amount,
     ]);
-    
-    Flux::toast('Your changes have been saved.');
 
+    // Handle file upload
+    if (is_array($this->receipt))
+    {
+      foreach ($this->receipt as $receipt)
+      {
+        $filename = (new UploadedExpenseReceipt())->execute($this->expense, $receipt);
+        $this->expense->receipt = $filename;
+        $this->expense->save();
+      }
+    }
+
+    $this->reset('date', 'title', 'description', 'amount', 'currency_id', 'receipt');
     $this->modal('expense-edit')->close();
+    Flux::toast('Your changes have been saved.');
   }
   
   public function remove()
   {
     $this->modal('expense-remove')->show();
+  }
+
+  public function deleteReceipt()
+  {
+    (new DeletedExpenseReceipt())->execute($this->expense);
+    $this->expense->update([
+      'receipt' => null,
+    ]);
+    $this->receipt = null;
   }
 
   #[Computed]
@@ -132,10 +156,10 @@ new class extends Component {
           <flux:heading size="lg">Edit Expense</flux:heading>
           <flux:subheading>Edit the expense details.</flux:subheading>
         </div>
-        <flux:input label="Number" wire:model="number" />
         <flux:input label="Date" type="date" wire:model="date" />
         <flux:input label="Title" wire:model="title" />
         <flux:textarea label="Description" rows="auto" wire:model="description" />
+        <flux:input label="Amount" wire:model="amount" />
         <div class="relative space-y-6">
           <flux:select label="Currency" wire:model="currency_id" placeholder="Choose currency...">
             @foreach ($this->currencies as $currency)
@@ -143,10 +167,31 @@ new class extends Component {
             @endforeach
           </flux:select>
         </div>
-        <flux:input label="Amount" wire:model="amount" />
+
+        @if ($expense->receipt)
+          <flux:field>
+            <flux:label class="block">Receipt</flux:label>
+            <div class="flex gap-2">
+              <flux:button
+                href="{{ asset('storage/expenses/' . $expense->receipt) }}"
+                target="_blank"
+                icon-trailing="arrow-up-right">
+                {{ $expense->receipt }}
+              </flux:button>
+              <flux:button variant="subtle" icon="x-mark" wire:click="deleteReceipt" />
+            </div>
+          </flux:field>
+        @else
+          <flux:field>
+            <flux:label>Receipt</flux:label>
+            <livewire:dropzone
+              wire:model="receipt"
+              :rules="['image','mimes:png,jpeg','max:10420']"
+              :multiple="false" />
+          </flux:field>
+        @endif
         <div class="flex">
-          <flux:spacer />
-          <flux:button type="submit" variant="primary">Save changes</flux:button>
+          <flux:button type="submit" class="w-full !mt-2" variant="primary">Save changes</flux:button>
         </div>
       </form>
     </flux:modal>

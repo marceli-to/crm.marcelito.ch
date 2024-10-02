@@ -4,10 +4,10 @@ use Livewire\Attributes\Rule;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Computed;
 use Livewire\WithPagination;
-use Illuminate\Http\File;
-use Illuminate\Support\Facades\Storage;
 use App\Models\Expense;
 use App\Models\Currency;
+use App\Actions\UploadedExpenseReceipt;
+use App\Actions\DeletedExpenseReceipt;
 
 new class extends Component {
 
@@ -68,7 +68,6 @@ new class extends Component {
   public function save()
   {
     $this->validate();
-
     $expense = Expense::create([
       'date' => $this->date,
       'title' => $this->title,
@@ -86,8 +85,7 @@ new class extends Component {
     {
       foreach ($this->receipt as $receipt)
       {
-        $filename = $expense->number . '.' . $receipt['extension'];
-        Storage::putFileAs('public/expenses', new File($receipt['path']), $filename);
+        $filename = (new UploadedExpenseReceipt())->execute($expense, $receipt);
         $expense->receipt = $filename;
         $expense->save();
       }
@@ -100,7 +98,9 @@ new class extends Component {
 
   public function remove($id)
   {
-    Expense::find($id)->delete();
+    $expense = Expense::find($id);
+    (new DeletedExpenseReceipt())->execute($expense);
+    $expense->delete();
     $this->gotoPage(1);
     $this->search = null;
   }
@@ -147,9 +147,9 @@ new class extends Component {
 
   <flux:table class="mt-6" :paginate="$this->expenses">
     <flux:columns>
-      <flux:column class="pl-2" sortable :sorted="$sortBy === 'date'" :direction="$sortDirection" wire:click="sort('date')">Date</flux:column>
+      <flux:column class="!pl-2" sortable :sorted="$sortBy === 'date'" :direction="$sortDirection" wire:click="sort('date')">Date</flux:column>
       <flux:column sortable :sorted="$sortBy === 'number'" :direction="$sortDirection" wire:click="sort('number')">Number</flux:column>
-      <flux:column sortable :sorted="$sortBy === 'description'" :direction="$sortDirection" wire:click="sort('description')">Description</flux:column>
+      <flux:column>Description</flux:column>
       <flux:column sortable :sorted="$sortBy === 'amount'" :direction="$sortDirection" wire:click="sort('amount')">Amount</flux:column>
     </flux:columns>
     <flux:rows>
@@ -176,19 +176,14 @@ new class extends Component {
           @endforeach
         </flux:select>
       </div>
-      <div>
-        <flux:field>
-          <flux:label>Receipt</flux:label>
-          <livewire:dropzone
-            wire:model="receipt"
-            :rules="['image','mimes:png,jpeg','max:10420']"
-            :multiple="false" />
-        </flux:field>
-      </div>
-      <div class="flex">
-        <flux:spacer />
-        <flux:button type="submit" variant="primary">Save Expense</flux:button>
-      </div>
+      <flux:field>
+        <flux:label>Receipt</flux:label>
+        <livewire:dropzone
+          wire:model="receipt"
+          :rules="['image','mimes:png,jpeg','max:10420']"
+          :multiple="false" />
+      </flux:field>
+      <flux:button type="submit" class="w-full !mt-8" variant="primary">Save Expense</flux:button>
     </form>
   </flux:modal>
 

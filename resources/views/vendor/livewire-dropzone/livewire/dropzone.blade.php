@@ -23,7 +23,7 @@
       </div>
     @endif
 
-    @if(isset($files) && count($files) === 0)
+    @if(!$files)
       <div @click="$refs.input.click()" class="group bg-zinc-50 border rounded-lg border-zinc-200 border-b-zinc-300/80 dz-w-full dz-cursor-pointer">
         <div>
           <div x-show="!isDragging" class="dz-flex dz-items-center dz-justify-center dz-gap-2 py-6 dz-h-full dark:dz-bg-gray-700">
