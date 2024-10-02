@@ -26,10 +26,10 @@ new class extends Component {
   #[Rule('boolean|required')]
   public $is_collection = false;
 
-  #[Rule('required')]
+  #[Rule('required|exists:companies,id')]
   public $company_id;
 
-  #[Rule('required')]
+  #[Rule('required|exists:companies,id')]
   public $principal_id;
   
   public $search = null;

@@ -4,9 +4,9 @@ use Illuminate\Console\Command;
 use App\Models\Company;
 use App\Models\Project;
 
-class LoadJson extends Command
+class ImportProjects extends Command
 {
-  protected $signature = 'load:json';
+  protected $signature = 'import:projects';
 
   protected $description = 'Loads a json file from /storage/app/public/';
 

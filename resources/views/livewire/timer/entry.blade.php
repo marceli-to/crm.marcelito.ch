@@ -28,7 +28,7 @@ new class extends Component {
   #[Rule('required')]
   public $time_end;
 
-  #[Rule('exists:companies,id')]
+  #[Rule('required|exists:companies,id')]
   public $company_id;
 
   #[Rule('exists:projects,id')]
