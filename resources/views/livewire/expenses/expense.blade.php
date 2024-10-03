@@ -70,7 +70,7 @@ new class extends Component {
       }
     }
 
-    $this->reset('date', 'title', 'description', 'amount', 'currency_id', 'receipt');
+    // $this->reset('date', 'title', 'description', 'amount', 'currency_id', 'receipt');
     $this->modal('expense-edit')->close();
     Flux::toast('Your changes have been saved.');
   }
@@ -128,6 +128,7 @@ new class extends Component {
       <flux:button variant="ghost" size="sm" icon="ellipsis-horizontal" inset="top bottom"></flux:button>
       <flux:menu class="min-w-32">
         <flux:menu.item icon="pencil-square" wire:click="edit">Edit</flux:menu.item>
+        <flux:menu.item icon="document-arrow-down" href="{{ route('pdf.expense', $expense) }}" target="_blank">PDF</flux:menu.item>
         <flux:menu.item icon="trash" variant="danger" wire:click="remove">Remove</flux:menu.item>
       </flux:menu>
     </flux:dropdown>
