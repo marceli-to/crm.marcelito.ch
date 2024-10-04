@@ -167,10 +167,9 @@ new class extends Component {
             @endforeach
           </flux:select>
         </div>
-
         @if ($expense->receipt)
-          <flux:field>
-            <flux:label class="block">Receipt</flux:label>
+          <div>
+            <label class="text-sm font-medium select-none text-zinc-800 dark:text-white block mb-3">Receipt</label>
             <div class="flex gap-2">
               <flux:button
                 href="{{ asset('storage/expenses/' . $expense->receipt) }}"
@@ -180,15 +179,13 @@ new class extends Component {
               </flux:button>
               <flux:button variant="subtle" icon="x-mark" wire:click="deleteReceipt" />
             </div>
-          </flux:field>
+          </div>
         @else
-          <flux:field>
-            <flux:label>Receipt</flux:label>
-            <livewire:dropzone
-              wire:model="receipt"
-              :rules="['image','mimes:png,jpeg','max:10420']"
-              :multiple="false" />
-          </flux:field>
+          <label class="text-sm font-medium select-none text-zinc-800 dark:text-white block mb-3">Receipt</label>
+          <livewire:dropzone
+            wire:model="receipt"
+            :rules="['mimes:png,jpeg,pdf','max:10420']"
+            :multiple="false" />
         @endif
         <div class="flex">
           <flux:button type="submit" class="w-full !mt-2" variant="primary">Save changes</flux:button>

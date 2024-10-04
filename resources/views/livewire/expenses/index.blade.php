@@ -34,7 +34,6 @@ new class extends Component {
   #[Rule('required')] 
   public $currency_id = null;
 
-  #[Rule('required')]
   public $receipt = null;
 
   public function mount()
@@ -81,7 +80,7 @@ new class extends Component {
     $expense->save();
 
     // Handle file upload
-    if ($this->receipt)
+    if (is_array($this->receipt))
     {
       foreach ($this->receipt as $receipt)
       {
@@ -176,13 +175,13 @@ new class extends Component {
           @endforeach
         </flux:select>
       </div>
-      <flux:field>
-        <flux:label>Receipt</flux:label>
+      <div>
+        <label class="text-sm font-medium select-none text-zinc-800 dark:text-white block mb-3">Receipt</label>
         <livewire:dropzone
-          wire:model="receipt"
-          :rules="['image','mimes:png,jpeg','max:10420']"
-          :multiple="false" />
-      </flux:field>
+        wire:model="receipt"
+        :rules="['mimes:png,jpeg,pdf','max:10420']"
+        :multiple="false" />
+      </div>
       <flux:button type="submit" class="w-full !mt-8" variant="primary">Save Expense</flux:button>
     </form>
   </flux:modal>

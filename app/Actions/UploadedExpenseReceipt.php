@@ -12,7 +12,16 @@ class UploadedExpenseReceipt
 
   public function execute(Expense $expense, $receipt)
   {
-    $filename = $expense->number . '.' . $receipt['extension'];
+    if ($receipt['extension'] == 'pdf')
+    {
+      $pdf = new \Spatie\PdfToImage\Pdf($receipt['path']);
+      $pdf->save(str_replace('.pdf', '.jpg', $receipt['path']));
+      $filename = $expense->number . '.jpg';
+    }
+    else
+    {
+      $filename = $expense->number . '.' . $receipt['extension'];
+    }
 
     // Store the file
     Storage::disk('public')->putFileAs('expenses', new File($receipt['path']), $filename);
