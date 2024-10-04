@@ -85,7 +85,7 @@ new class extends Component {
     {
       foreach ($this->receipt as $receipt)
       {
-        $filename = (new UploadedExpenseReceipt())->execute($expense, $receipt);
+        $filename = (new UploadedExpenseReceipt())->execute($expense->number, $receipt);
         $expense->receipt = $filename;
         $expense->save();
       }

@@ -1,9 +1,9 @@
 <?php
-namespace App\Actions;
+namespace App\Actions\Expense;
 use Webklex\PHPIMAP\ClientManager;
 use Webklex\PHPIMAP\Client;
 
-class FetchMailbox
+class FetchMails
 {
   public function execute()
   {
@@ -11,6 +11,6 @@ class FetchMailbox
     $client = $client_manager->account('default');
     $client->connect();
     $folder = $client->getFolderByName('INBOX');
-    return $folder->messages()->all()->get();
+    return $folder->messages()->all()->get() ?? [];
   }
 }
