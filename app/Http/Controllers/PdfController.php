@@ -17,7 +17,7 @@ class PdfController extends Controller
 
   private function _getFileName(Expense $expense)
   {
-    return 'm_to-' . date('d.m.Y', strtotime($expense->date)) . '-' . Str::slug($expense->title) . '-'. $expense->number .'.pdf';
+    return 'marceli.to-' . $expense->number . '-' . Str::slug($expense->title) . '-' . date('d.m.Y', strtotime($expense->date)) . '.pdf';
   }
 }
 

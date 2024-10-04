@@ -1,8 +1,3 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<title>Invoice</title>
-<style>
 @font-face {
   font-family: 'Poppins-Bold';
   src: url('{{ url("/") }}/pdf/css/fonts/Poppins-Bold.ttf') format("truetype");
@@ -137,7 +132,7 @@ h2 {
 
 /* Invoice data */
 .invoice-address {
-  font-size: 10pt;
+  font-size: 11pt;
   line-height: 1;
   margin-top: 20mm;
 }
@@ -166,7 +161,7 @@ header.invoice-header table td:nth-child(2n+2) {
 }
 
 main.invoice-body {
-  font-size: 10pt;
+  font-size: 11pt;
   line-height: 15pt;
   margin-top: 5mm;
   text-align: left;
@@ -174,7 +169,7 @@ main.invoice-body {
 
 table.invoice-positions,
 table.invoice-positions.is-journal {
-  font-size: 10pt;
+  font-size: 11pt;
   line-height: 1;
   margin-top: 5mm;
   width: 100%;
@@ -192,7 +187,7 @@ table.invoice-positions th {
 }
 
 table.invoice-positions thead {
-  border-bottom: .1mm solid #444444;
+  border-bottom: .1mm solid #777777;
   line-height: 1;
 }
 
@@ -207,17 +202,17 @@ table.invoice-positions thead th {
 }
 
 table.invoice-positions tr.position td {
-  border-bottom: .03mm solid #444444;
+  border-bottom: .03mm solid #777777;
   vertical-align: top;
 }
 
 table.invoice-positions tr.position-footer td {
-  border-bottom: .03mm solid #444444;
+  border-bottom: .03mm solid #777777;
 }
 
 table.invoice-positions tr.position-footer--grandtotal td {
   font-family: 'Poppins-Medium', sans-serif !important;
-  border-bottom: .3mm solid #444444;
+  border-bottom: .3mm solid #777777;
 }
 
 .invoice-remarks {
@@ -268,6 +263,18 @@ table.invoice-positions tr.position-footer--grandtotal td {
   width: 70mm;
 }
 
+.payment-status {
+  background-color: #5cb85c;
+  color: #fff;
+  font-family: 'Poppins-Bold', sans-serif !important;
+  font-size: 12pt;
+  line-height: 1.2;
+  padding: 2mm;
+  position: absolute;
+  right: 20mm;
+  top: 60mm;
+}
+
 .payment-info-box table {
   width: 100%;
 }
@@ -286,33 +293,3 @@ li {
   line-height: 10pt;
   margin-bottom: 1mm;
 }
-</style>
-</head>
-<body>
-<header class="page-header">
-  <span class="logo">
-    <img src="{{ asset('pdf/img/logo-marcelito.svg') }}" height="100" width="100">
-  </span>
-</header>
-<div class="address">
-  <strong>marceli.to</strong><br>Marcel Stadelmann<br>Letzigraben 149<br>8047 Zürich<br><br>m@marceli.to<br>078 749 74 09
-</div>
-<div class="payment-info-box">
-  <table>
-    <tr>
-      <td>Bank</td>
-      <td>Raiffeisenbank Weinland</td>
-    </tr>
-    <tr>
-      <td>IBAN</td>
-      <td>CH22 8080 8003 1865 2284 6</td>
-    </tr>
-    <tr>
-      <td>Zugunsten</td>
-      <td>Marcel Stadelmann<br>Letzigraben 149<br>8047 Zürich</td>
-    </tr>
-  </table>
-</div>
-<footer class="page-footer">
- Marcel Stadelmann &bull; Letzigraben 149 &bull; 8047 Zürich &bull; 078 749 74 09 &bull; m@marceli.to
-</footer>

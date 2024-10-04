@@ -9,12 +9,12 @@
 </header>
 <main class="invoice-body">
   <div>
-    <strong>{{$expense->title}}</strong>
+    <strong>{{ date('d.m.Y', strtotime($expense->date))}} – {{$expense->title}}</strong>
   </div>
   <table class="invoice-positions" cellspacing="0" cellpadding="0" style="margin-top: 2mm; border-top: .03mm solid #000000;">
     <tbody>
       <tr class="position">
-        <td>{{$expense->description}}, {{ date('d.m.Y', strtotime($expense->date))}}</td>
+        <td>{{$expense->description}}</td>
         <td class="align-right">{{ number_format($expense->amount, 2, '.', '\'') }}</td>
       </tr>
       <tr class="position-footer position-footer--grandtotal">

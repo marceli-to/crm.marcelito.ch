@@ -70,7 +70,6 @@ new class extends Component {
       }
     }
 
-    // $this->reset('date', 'title', 'description', 'amount', 'currency_id', 'receipt');
     $this->modal('expense-edit')->close();
     Flux::toast('Your changes have been saved.');
   }

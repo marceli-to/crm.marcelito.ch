@@ -68,7 +68,7 @@
         <td>Total</td>
         <td></td>
         <td></td>
-        <td class="position-total  align-right">7500.00</td>
+        <td class="position-total align-right">7500.00</td>
       </tr>
     </tbody>
   </table>
