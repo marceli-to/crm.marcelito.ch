@@ -67,6 +67,7 @@ new class extends Component {
   public function save()
   {
     $this->validate();
+    
     $expense = Expense::create([
       'date' => $this->date,
       'title' => $this->title,

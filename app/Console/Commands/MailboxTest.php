@@ -5,6 +5,7 @@ use App\Actions\FetchMailbox;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Expense;
 use App\Actions\UploadedExpenseReceipt;
+
 class MailboxTest extends Command
 {
   protected $signature = 'mailbox:test';
@@ -33,12 +34,12 @@ class MailboxTest extends Command
               $extension = str_replace('jpeg', 'jpg', explode('/', $attachment->getAttributes()['content_type'])[1]);
               $receipt['extension'] = $extension;
 
-
               // Generate data from subject (Title and Description / Amount)
               $subject = explode(':', $message->getSubject()[0]);
               $title = $subject[0];
               $description = $subject[0];
               $amount = $subject[1];
+
               // Create expense
               $expense = Expense::create([
                 'date' => date('Y-m-d'),
@@ -58,6 +59,8 @@ class MailboxTest extends Command
               $expense->save();
             }
           }
+
+          // TODO: delete message from mailbox
         }
       }
     }
