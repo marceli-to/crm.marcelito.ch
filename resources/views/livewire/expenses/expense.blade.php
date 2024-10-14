@@ -4,8 +4,8 @@ use Livewire\Attributes\Rule;
 use Livewire\Attributes\Computed;
 use App\Models\Expense;
 use App\Models\Currency;
-use App\Actions\DeletedExpenseReceipt;
-use App\Actions\UploadedExpenseReceipt;
+use App\Actions\Expense\DeletedReceipt;
+use App\Actions\Expense\UploadedReceipt;
 
 new class extends Component {
 
@@ -64,7 +64,7 @@ new class extends Component {
     {
       foreach ($this->receipt as $receipt)
       {
-        $filename = (new UploadedExpenseReceipt())->execute($this->expense->number, $receipt);
+        $filename = (new UploadedReceipt())->execute($this->expense->number, $receipt);
         $this->expense->receipt = $filename;
         $this->expense->save();
       }
@@ -81,7 +81,7 @@ new class extends Component {
 
   public function deleteReceipt()
   {
-    (new DeletedExpenseReceipt())->execute($this->expense);
+    (new DeletedReceipt())->execute($this->expense);
     $this->expense->update([
       'receipt' => null,
     ]);

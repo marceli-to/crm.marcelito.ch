@@ -6,8 +6,9 @@ use Livewire\Attributes\Computed;
 use Livewire\WithPagination;
 use App\Models\Expense;
 use App\Models\Currency;
-use App\Actions\UploadedExpenseReceipt;
-use App\Actions\DeletedExpenseReceipt;
+use App\Actions\Expense\UploadedReceipt;
+use App\Actions\Expense\DeletedReceipt;
+use App\Actions\Expense\CreateExpense;
 
 new class extends Component {
 
@@ -68,7 +69,7 @@ new class extends Component {
   {
     $this->validate();
     
-    $expense = Expense::create([
+    $expense = (new CreateExpense())->execute([
       'date' => $this->date,
       'title' => $this->title,
       'description' => $this->description,
@@ -76,16 +77,12 @@ new class extends Component {
       'currency_id' => $this->currency_id,
     ]);
 
-    // Set the expense number
-    $expense->number = date('y', time()) . '.' . str_pad($expense->id, 4, "0", STR_PAD_LEFT);
-    $expense->save();
-
     // Handle file upload
     if (is_array($this->receipt))
     {
       foreach ($this->receipt as $receipt)
       {
-        $filename = (new UploadedExpenseReceipt())->execute($expense->number, $receipt);
+        $filename = (new UploadedReceipt())->execute($expense->number, $receipt);
         $expense->receipt = $filename;
         $expense->save();
       }
@@ -99,10 +96,11 @@ new class extends Component {
   public function remove($id)
   {
     $expense = Expense::find($id);
-    (new DeletedExpenseReceipt())->execute($expense);
+    (new DeletedReceipt())->execute($expense);
     $expense->delete();
     $this->gotoPage(1);
     $this->search = null;
+    Flux::toast('Expense deleted.');
   }
 
   #[Computed]

@@ -1,12 +1,12 @@
 <?php
-namespace App\Actions;
+namespace App\Actions\Expense;
 use App\Models\Expense;
 use Illuminate\Http\File;
 use Illuminate\Support\Facades\Storage;
 use Spatie\Image\Image;
 use Spatie\Image\Enums\Fit;
 
-class UploadedExpenseReceipt
+class UploadedReceipt
 {
   protected $maxSize = 2000;
 
@@ -19,10 +19,20 @@ class UploadedExpenseReceipt
     if ($receipt['extension'] == 'pdf')
     {
       $pdf = new \Spatie\PdfToImage\Pdf($receipt['path']);
-      $pdf->save(str_replace('.pdf', '.jpg', $receipt['path']));
+      $image_path = str_replace('.pdf', '.jpg', $receipt['path']);
+      $pdf->resolution(300)->quality(90)->size(1500)->save($image_path);
 
       // Override the extension
       $extension = 'jpg';
+
+      // Set the filename
+      $filename = $number . '.' . $extension;
+
+      // Store the image
+      Storage::disk('public')->putFileAs('expenses', new File($image_path), $filename);
+
+      // Return the filename
+      return $filename;
     }
 
     // Set the filename
@@ -36,7 +46,8 @@ class UploadedExpenseReceipt
       ->path('expenses/' . $filename))
       ->fit(Fit::Max, $this->maxSize, $this->maxSize)
       ->save();
-    
+
+    // Return the filename
     return $filename;
   }
 }

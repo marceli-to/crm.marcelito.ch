@@ -1,9 +1,9 @@
 <?php
-namespace App\Actions;
+namespace App\Actions\Expense;
 use App\Models\Expense;
 use Illuminate\Support\Facades\Storage;
 
-class DeletedExpenseReceipt
+class DeletedReceipt
 {
   public function execute(Expense $expense)
   {
