@@ -109,10 +109,6 @@ new class extends Component {
     {{ $expense->description }}
   </flux:cell>
 
-  {{-- <flux:cell class="w-24">
-    {{ $expense->currency->label }}
-  </flux:cell> --}}
-
   <flux:cell class="w-36">
     <div class="flex justify-between items-center">
       <flux:badge inset="top right" size="sm" class="text-zinc-300">
@@ -192,6 +188,7 @@ new class extends Component {
         </div>
       </form>
     </flux:modal>
+    
   </flux:cell>
 
 </flux:row>
