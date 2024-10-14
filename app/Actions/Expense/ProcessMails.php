@@ -38,7 +38,7 @@ class ProcessMails
           // Save the attachment to the mailbox-temp folder
           if (Storage::put('mailbox-temp/' . $attachment->getAttributes()['name'], $attachment->content))
           {
-            // Generate expense data from subject (Title and Description / Amount)
+            // Generate expense data from subject (Title:Description:Amount)
             $data = explode(':', $message->getSubject()[0]);
             $expense = (new CreateExpense())->execute([
               'title' => $data[0],
@@ -63,7 +63,7 @@ class ProcessMails
             $expense->save();
 
             // Delete the message
-            // $message->delete();
+            $message->delete();
           }
         }
       }
