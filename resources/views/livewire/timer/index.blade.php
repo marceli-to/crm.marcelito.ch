@@ -47,15 +47,7 @@ new class extends Component {
 
     $this->reset('task', 'date', 'time_start', 'time_end', 'company_id', 'project_id');
     $this->modal('entry-create')->close();
-  }
-
-  public function getDailyTotal($entries)
-  {
-    $total = $entries->sum('duration');
-    return [
-      'color' => $total > 420 ? 'lime' : 'red',
-      'label' => floor($total / 60) . 'h ' . ($total % 60 ? ($total % 60) . 'm' : ''),
-    ];
+    Flux::toast('Entry created', variant: 'success');
   }
 
   public function remove($id)
@@ -116,8 +108,8 @@ new class extends Component {
         {{ date('Y-m-d', strtotime($day)) === date('Y-m-d') ? 'Today' : date('l, j.m.Y', strtotime($day)) }}
       </div>
       <div>
-        <flux:badge size="sm" inset="top bottom" color="{{ $this->getDailyTotal($entriesByDay)['color'] }}">
-          {{ $this->getDailyTotal($entriesByDay)['label'] }}
+        <flux:badge size="sm" inset="top bottom" :color="$entriesByDay->sum('duration') >= 360 ? 'lime' : 'red'">
+          Total: {{ humanized_duration($entriesByDay->sum('duration')) }}
         </flux:badge>
       </div>
     </flux:heading>

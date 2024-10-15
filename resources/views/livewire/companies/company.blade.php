@@ -71,7 +71,9 @@ new class extends Component {
   </flux:cell>
 
   <flux:cell class="w-48">
-    {{ $company->acronym }}
+    <flux:badge inset="top right" size="sm" class="text-zinc-300">
+      {{ $company->acronym }}
+    </flux:badge>
   </flux:cell>
 
   <flux:cell>

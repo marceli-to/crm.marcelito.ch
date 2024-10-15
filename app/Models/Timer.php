@@ -22,28 +22,6 @@ class Timer extends Model
     'time_end' => 'datetime',
   ];
 
-  protected $appends = [
-    'humanized_duration',
-  ];
-
-  public function getHumanizedDurationAttribute()
-  {
-    // duration is in minutes. if lower than 60, return the duration in minutes.
-    // if it's more than 60, return the duration in hours and minutes.
-    if ($this->duration < 60)
-    {
-      return $this->duration . 'm';
-    }
-    else {
-      // show minutes only if its more than 0
-      if ($this->duration % 60 > 0)
-      {
-        return floor($this->duration / 60) . 'h ' . ($this->duration % 60) . 'm';
-      }
-      return floor($this->duration / 60) . 'h';
-    }
-  }
-
   public function project()
   {
     return $this->belongsTo(Project::class);

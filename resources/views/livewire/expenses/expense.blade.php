@@ -71,7 +71,7 @@ new class extends Component {
     }
 
     $this->modal('expense-edit')->close();
-    Flux::toast('Your changes have been saved.');
+    Flux::toast('Expense updated', variant: 'success');
   }
   
   public function remove()

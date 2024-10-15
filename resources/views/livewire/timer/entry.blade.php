@@ -61,7 +61,7 @@ new class extends Component {
       'is_not_today' => $this->is_not_today,
     ]);
     
-    Flux::toast('Your changes have been saved.');
+    Flux::toast('Entry updated', variant: 'success');
     $this->modal('entry-edit')->close();
     $this->dispatch('entry_updated');
   }
@@ -109,7 +109,9 @@ new class extends Component {
     <span class="text-xs text-zinc-500">&ndash;</span>
     {{ $entry->time_end->format('H:i') }}
   </flux:cell>
-  <flux:cell class="text-right">{{ $entry->humanized_duration }}</flux:cell>
+  <flux:cell class="text-right">
+    {{ humanized_duration($entry->duration, true) }}
+  </flux:cell>
 
   <flux:cell class="flex justify-end">
 

@@ -99,22 +99,6 @@ new class extends Component {
   {
     $this->modal('project-remove')->show();
   }
-
-  public function getHumanizedDuration($sum)
-  {
-    if ($sum < 60)
-    {
-      return $sum . 'm';
-    }
-    else {
-      // show minutes only if its more than 0
-      if ($sum % 60 > 0)
-      {
-        return floor($sum / 60) . 'h ' . ($sum % 60) . 'm';
-      }
-      return floor($sum / 60) . 'h';
-    }
-  }
 };
 ?>
 <flux:row>
@@ -136,8 +120,8 @@ new class extends Component {
 
   <flux:cell>
     @if ($project->timer->sum('duration') > 0)
-    <flux:badge size="sm" color="lime" inset="top bottom">
-      {{ $this->getHumanizedDuration($project->timer->sum('duration')) }}
+      <flux:badge size="sm" color="lime" inset="top bottom">
+      {{ humanized_duration($project->timer->sum('duration')) }}
       </flux:badge>
     @endif
   </flux:cell>

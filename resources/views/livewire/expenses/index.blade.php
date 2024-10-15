@@ -87,10 +87,10 @@ new class extends Component {
         $expense->save();
       }
     }
-
+    
     $this->reset('date', 'title', 'description', 'amount', 'currency_id', 'receipt');
     $this->modal('expense-create')->close();
-    Flux::toast('Expense created.');
+    Flux::toast('Expense created', variant: 'success');
   }
 
   public function remove($id)
