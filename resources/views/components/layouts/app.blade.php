@@ -29,6 +29,7 @@
         <flux:navlist.item icon="clock" href="/timer">Timer</flux:navlist.item>
         <flux:navlist.item icon="building-storefront" href="/companies">Companies</flux:navlist.item>
         <flux:navlist.item icon="wrench-screwdriver" href="/projects">Projects</flux:navlist.item>
+        <flux:navlist.item icon="banknotes" href="/invoices">Invoices</flux:navlist.item>
         <flux:navlist.item icon="ticket" href="/expenses">Expenses</flux:navlist.item>
 
 

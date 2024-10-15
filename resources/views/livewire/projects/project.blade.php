@@ -67,10 +67,9 @@ new class extends Component {
   public function update()
   {
     $this->validate();
-
     $this->project->update([
       'name' => $this->name,
-      'budget' => $this->budget,
+      'budget' => $this->budget == "" ? 0.00 : $this->budget,
       'is_collection' => $this->is_collection,
       'company_id' => $this->company_id,
       'principal_id' => $this->principal_id,

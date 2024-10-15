@@ -3,26 +3,27 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Expense extends Model
+class InvoiceItem extends Model
 {
   use SoftDeletes;
-  
+
   protected $fillable = [
-    'number',
+    'periode',
     'date',
-    'title',
     'description',
-    'currency_id',
+    'rate',
+    'time',
+    'flatrate',
     'amount',
-    'receipt',
+    'invoice_id',
   ];
 
   protected $casts = [
     'date' => 'date',
   ];
 
-  public function currency()
+  public function invoice()
   {
-    return $this->belongsTo(Currency::class);
+    return $this->belongsTo(Invoice::class);
   }
 }

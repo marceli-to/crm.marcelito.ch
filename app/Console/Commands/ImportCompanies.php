@@ -2,11 +2,10 @@
 namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Models\Company;
-use App\Models\Project;
 
-class ImportProjects extends Command
+class ImportCompanies extends Command
 {
-  protected $signature = 'import:projects';
+  protected $signature = 'import:companies';
 
   protected $description = 'Loads a json file from /storage/app/public/';
 
@@ -41,42 +40,6 @@ class ImportProjects extends Command
           'city' => $item['city'],
         ]);
       }
-
-      if ($item['state_id'] != 6)
-      {
-        $rate = $item['rate'];
-        
-        switch ($rate)
-        {
-          case '100.00':
-            $rate_id = 1;
-            break;
-          case '125.00':
-            $rate_id = 2;
-            break;
-          case '135.00':
-            $rate_id = 3;
-            break;
-          case '150.00':
-            $rate_id = 4;
-            break;
-          default:
-            $rate_id = 3;
-            break;
-        }
-
-
-        $project = Project::create([
-          'name' => $item['title'],
-          'budget' => $item['total'],
-          'rate_id' => $rate_id,
-          'company_id' => $company->id,
-          'principal_id' => $company->id,
-          'archived_at' => $item['state_id'] == 3 ? now() : null,
-          'created_at' => $item['created_at'],
-        ]);
-      }
     }
-
   }
 }
