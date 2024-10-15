@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "205176fe54bc4738521fbc563927069c",
+    "content-hash": "a7f46a522c5855e6765365b0ec98515e",
     "packages": [
         {
             "name": "barryvdh/laravel-dompdf",
@@ -2176,23 +2176,23 @@
         },
         {
             "name": "livewire/flux",
-            "version": "v1.0.6",
+            "version": "v1.0.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/livewire/flux.git",
-                "reference": "65bcd0346ff329c2a059a0572b2f614f2e2e37ec"
+                "reference": "2201018f6ba5e14d06dd388cc9b820f415a59779"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/livewire/flux/zipball/65bcd0346ff329c2a059a0572b2f614f2e2e37ec",
-                "reference": "65bcd0346ff329c2a059a0572b2f614f2e2e37ec",
+                "url": "https://api.github.com/repos/livewire/flux/zipball/2201018f6ba5e14d06dd388cc9b820f415a59779",
+                "reference": "2201018f6ba5e14d06dd388cc9b820f415a59779",
                 "shasum": ""
             },
             "require": {
                 "illuminate/console": "^10.0|^11.0",
                 "illuminate/support": "^10.0|^11.0",
                 "illuminate/view": "^10.0|^11.0",
-                "laravel/prompts": "^0.1|^0.2",
+                "laravel/prompts": "^0.1|^0.2|^0.3",
                 "livewire/livewire": "^3.5",
                 "php": "^8.1",
                 "symfony/console": "^6.0|^7.0"
@@ -2233,25 +2233,25 @@
             ],
             "support": {
                 "issues": "https://github.com/livewire/flux/issues",
-                "source": "https://github.com/livewire/flux/tree/v1.0.6"
+                "source": "https://github.com/livewire/flux/tree/v1.0.9"
             },
-            "time": "2024-10-01T12:34:52+00:00"
+            "time": "2024-10-09T15:12:25+00:00"
         },
         {
             "name": "livewire/flux-pro",
-            "version": "1.0.6",
+            "version": "1.0.9",
             "dist": {
                 "type": "zip",
-                "url": "https://composer.fluxui.dev/download/9d2428d7-c750-42b1-be48-6e99adbcd0eb/flux-pro-1.0.6.zip",
-                "reference": "301fb2201dd09e3fcbb9a79c56be632ef26d1a35",
-                "shasum": "35f8790d56d4b625ebb7da8f0e357e9ee56afb02"
+                "url": "https://composer.fluxui.dev/download/9d34798d-b97b-4dd5-9903-e30383f6ac3d/flux-pro-1.0.9.zip",
+                "reference": "e6b0448e89b7c79204f498dc879f6f81dde8a1f2",
+                "shasum": "17dd3dbdb32942bc8efa0372eaa0fab71b524525"
             },
             "require": {
                 "illuminate/console": "^10.0|^11.0",
                 "illuminate/support": "^10.0|^11.0",
                 "illuminate/view": "^10.0|^11.0",
-                "laravel/prompts": "^0.1.24|^0.2",
-                "livewire/flux": "1.0.6",
+                "laravel/prompts": "^0.1.24|^0.2|^0.3",
+                "livewire/flux": "1.0.9",
                 "livewire/livewire": "^3.5",
                 "php": "^8.1",
                 "symfony/console": "^6.0|^7.0"
@@ -2292,7 +2292,7 @@
                 "livewire",
                 "ui"
             ],
-            "time": "2024-10-01T12:38:17+00:00"
+            "time": "2024-10-09T15:17:13+00:00"
         },
         {
             "name": "livewire/livewire",
@@ -10057,6 +10057,59 @@
                 }
             ],
             "time": "2024-03-03T12:36:25+00:00"
+        },
+        {
+            "name": "wire-elements/wire-spy",
+            "version": "v0.0.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/wire-elements/wire-spy.git",
+                "reference": "130d19331a03d9f10fc8e4e8952a69afedb99491"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/wire-elements/wire-spy/zipball/130d19331a03d9f10fc8e4e8952a69afedb99491",
+                "reference": "130d19331a03d9f10fc8e4e8952a69afedb99491",
+                "shasum": ""
+            },
+            "require": {
+                "livewire/livewire": "^v3.0.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "WireElements\\WireSpy\\WireSpyServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "WireElements\\WireSpy\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Philo Hermans",
+                    "email": "me@philo.dev"
+                }
+            ],
+            "description": "Devtools for Livewire",
+            "support": {
+                "issues": "https://github.com/wire-elements/wire-spy/issues",
+                "source": "https://github.com/wire-elements/wire-spy/tree/v0.0.8"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/PhiloNL",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-10-14T21:56:26+00:00"
         }
     ],
     "aliases": [],

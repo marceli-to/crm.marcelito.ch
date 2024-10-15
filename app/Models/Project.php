@@ -37,6 +37,11 @@ class Project extends Model
     return $this->belongsTo(Company::class);
   }
 
+  public function timer()
+  {
+    return $this->hasMany(Timer::class);
+  }
+
   public function scopeActive($query)
   {
     return $query->whereNull('archived_at');

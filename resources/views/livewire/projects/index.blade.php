@@ -98,6 +98,7 @@ new class extends Component {
             $q->where('name', 'like', '%' . $this->search . '%');
           });
       })
+      ->with('timer')
       ->paginate(15);
   }
 
@@ -132,7 +133,7 @@ new class extends Component {
     <flux:columns>
       <flux:column>Name</flux:column>
       <flux:column sortable :sorted="$sortBy === 'created_at'" :direction="$sortDirection" wire:click="sort('created_at')">Year</flux:column>
-      <flux:column></flux:column>
+      <flux:column>Duration</flux:column>
     </flux:columns>
     <flux:rows>
       @foreach ($this->projects as $project)

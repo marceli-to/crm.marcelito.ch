@@ -99,7 +99,7 @@ new class extends Component {
   <flux:cell class="w-1/2">
   <flux:badge inset="top bottom" size="sm" color="violet">
     {{ $entry->project->name }}
-    <span class="text-xs text-zinc-500 mx-1">&bull;</span>
+    <span class="text-xs text-violet-700 mx-1">&bull;</span>
     {{ $entry->project->company->acronym }}
   </flux:badge>
 
