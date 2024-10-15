@@ -134,10 +134,6 @@ new class extends Component {
         <flux:switch wire:model="is_billable" label="Billable?" description="Exclude entries from being billed." />
       </div>
 
-      <div class="my-10">
-        <flux:switch wire:model.live="is_not_today" label="Not today?" description="Set entry date to a different day." />
-      </div>
-
       <flux:input label="Task" wire:model="task" />
 
       <flux:select label="Company" wire:model="company_id" wire:change="dispatch('company_changed')" placeholder="Choose company...">
@@ -154,6 +150,10 @@ new class extends Component {
         </flux:select>
       @endif
         
+      <div class="my-10">
+        <flux:switch wire:model.live="is_not_today" label="Not today?" description="Set entry date to a different day." />
+      </div>
+
       @if ($is_not_today)
         <flux:input label="Date" wire:model="date" type="date" />
       @endif
@@ -162,11 +162,7 @@ new class extends Component {
         <flux:input label="Start" wire:model="time_start" type="time" class="!w-44" />
         <flux:input label="End" wire:model="time_end" type="time" class="!w-44" />
       </div>
-
-      <div class="flex">
-        <flux:spacer />
-        <flux:button type="submit" variant="primary">Save entry</flux:button>
-      </div>
+      <flux:button type="submit" class="w-full !mt-8" variant="primary">Store Entry</flux:button>
     </form>
   </flux:modal>
 

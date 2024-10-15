@@ -183,9 +183,7 @@ new class extends Component {
             :rules="['mimes:png,jpeg,pdf','max:10420']"
             :multiple="false" />
         @endif
-        <div class="flex">
-          <flux:button type="submit" class="w-full !mt-2" variant="primary">Save changes</flux:button>
-        </div>
+        <flux:button type="submit" class="w-full !mt-8" variant="primary">Update Expense</flux:button>
       </form>
     </flux:modal>
     

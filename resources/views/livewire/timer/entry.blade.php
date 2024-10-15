@@ -179,11 +179,7 @@ new class extends Component {
           <flux:input label="Start" wire:model="time_start" :value="$entry->time_start->format('H:i')" type="time" class="!w-44" />
           <flux:input label="End" wire:model="time_end" :value="$entry->time_end->format('H:i')" type="time" class="!w-44" />
         </div>
-
-        <div class="flex">
-          <flux:spacer />
-          <flux:button type="submit" variant="primary">Save changes</flux:button>
-        </div>
+        <flux:button type="submit" class="w-full !mt-8" variant="primary">Update Entry</flux:button>
       </form>
     </flux:modal>
 

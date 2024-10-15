@@ -53,8 +53,5 @@ new class extends Component {
   <flux:input label="Street" wire:model="street" />
   <flux:input label="Zip" wire:model="zip" />
   <flux:input label="City" wire:model="city" />
-  <div class="flex">
-    <flux:spacer />
-    <flux:button type="submit" variant="primary">Save Company</flux:button>
-  </div>
+  <flux:button type="submit" class="w-full !mt-8" variant="primary">Store Company</flux:button>
 </form>

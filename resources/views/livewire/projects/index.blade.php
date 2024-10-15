@@ -170,10 +170,7 @@ new class extends Component {
           @endforeach
         </flux:select>
       </div>
-      <div class="flex">
-        <flux:spacer />
-        <flux:button type="submit" variant="primary">Save Project</flux:button>
-      </div>
+      <flux:button type="submit" class="w-full !mt-8" variant="primary">Store Project</flux:button>
     </form>
   </flux:modal>
 
