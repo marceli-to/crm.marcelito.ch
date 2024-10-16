@@ -98,7 +98,7 @@ new class extends Component {
   </flux:cell>
 
   <flux:cell class="w-32">
-    <flux:badge variant="pill" size="sm" class="uppercase" :color="$invoice->status->color">
+    <flux:badge variant="pill" size="sm" class="uppercase" inset="top bottom" :color="$invoice->status->color">
       {{ $invoice->status->label }}
     </flux:badge>
   </flux:cell>

@@ -100,15 +100,93 @@ new class extends Component {
       ->paginate(15);
   }
 
+  #[Computed]
+  public function sumOpenInvoices()
+  {
+    return Invoice::query()->open()->sum('total');
+  }
+
+  #[Computed]
+  public function sumPendingInvoices()
+  {
+    return Invoice::query()->pending()->sum('total');
+  }
+
+  #[Computed]
+  public function sumPaidInvoices()
+  {
+    return Invoice::query()->paid()->sum('total');
+  }
+
+  #[Computed]
+  public function sumInvoices()
+  {
+    return Invoice::query()->notCancelled()->sum('total');
+  }
+
 };
 ?>
 
 <div class="max-w-5xl">
+  <flux:heading size="lg">Invoice statistics</flux:heading>
+  <div class="mt-4 grid grid-cols-12 gap-4"> 
+    <flux:card class="col-span-6 sm:col-span-3 !p-3 flex justify-between items-center">
+      <div>
+        <flux:heading size="lg" class="!mb-0">
+          {!! number_format($this->sumOpenInvoices, 2, '.', '&thinsp;') !!}
+        </flux:heading>
+        <flux:subheading class="!text-zinc-400">
+          Open
+        </flux:subheading>
+      </div>
+      <div class="bg-blue-50 p-2 rounded-lg">
+        <flux:icon.currency-dollar class="text-blue-400 size-6" />
+      </div>
+    </flux:card>
+    <flux:card class="col-span-6 sm:col-span-3 !p-3 flex justify-between items-center">
+      <div>
+        <flux:heading size="lg" class="!mb-0">
+          {!! number_format($this->sumPendingInvoices, 2, '.', '&thinsp;') !!}
+        </flux:heading>
+        <flux:subheading>
+          Pending
+        </flux:subheading>
+      </div>
+      <div class="bg-amber-50 p-2 rounded-lg">
+        <flux:icon.currency-dollar class="text-amber-400 size-6" />
+      </div>
+    </flux:card>
+    <flux:card class="col-span-6 sm:col-span-3 !p-3 flex justify-between items-center">
+      <div>
+        <flux:heading size="lg" class="!mb-0">
+          {!! number_format($this->sumPaidInvoices, 2, '.', '&thinsp;') !!}
+        </flux:heading>
+        <flux:subheading>
+          Paid
+        </flux:subheading>
+      </div>
+      <div class="bg-green-50 p-2 rounded-lg">
+        <flux:icon.currency-dollar class="text-green-400 size-6" />
+      </div>
+    </flux:card>
+    <flux:card class="col-span-6 sm:col-span-3 !p-3 flex justify-between items-center">
+      <div>
+        <flux:heading size="lg" class="!mb-0">
+          {!! number_format($this->sumInvoices, 2, '.', '&thinsp;') !!}
+        </flux:heading>
+        <flux:subheading>
+          All
+        </flux:subheading>
+      </div>
+      <div class="bg-green-50 p-2 rounded-lg">
+        <flux:icon.currency-dollar class="text-green-400 size-6" />
+      </div>
+    </flux:card>
+  </div>
 
-  <div class="flex flex-col md:flex-row space-y-6 md:space-y-0 md:justify-between md:items-center">
+  <div class="mt-12 flex flex-col md:flex-row space-y-6 md:space-y-0 md:justify-between md:items-center">
     <div>
-      <flux:heading size="xl">Invoices</flux:heading>
-      <flux:subheading>List of your invoices</flux:subheading>
+      <flux:heading size="lg">Invoice list</flux:heading>
     </div>
     <div class="flex gap-x-6">
       <flux:input size="sm" wire:model.live.debounce.300ms="search" placeholder="Search...">
@@ -119,6 +197,7 @@ new class extends Component {
       <flux:button size="sm" icon="squares-plus">Create Invoice</flux:button>
       </div>
   </div>
+
 
   <flux:table class="mt-6" :paginate="$this->invoices">
     <flux:columns>

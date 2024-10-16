@@ -59,4 +59,34 @@ class Invoice extends Model
   {
     return $this->hasMany(InvoiceItem::class);
   }
+
+  public function scopeOpen($query)
+  {
+    return $query->where('status_id', 1);
+  }
+
+  public function scopePending($query)
+  {
+    return $query->where('status_id', 2);
+  }
+
+  public function scopePaid($query)
+  {
+    return $query->where('status_id', 3);
+  }
+
+  public function scopeOverdue($query)
+  {
+    return $query->where('status_id', 4);
+  }
+
+  public function scopeCancelled($query)
+  {
+    return $query->where('status_id', 5);
+  }
+
+  public function scopeNotCancelled($query)
+  {
+    return $query->where('status_id', '!=', 5);
+  }
 }
