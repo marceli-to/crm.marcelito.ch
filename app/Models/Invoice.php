@@ -16,13 +16,23 @@ class Invoice extends Model
     'vat',
     'grand_total',
     'cancellation_reason',
+    'company_id',
+    'project_id',
+    'status_id',
+    'due_at',
+    'paid_at',
+    'created_at',
+    'updated_at',
+    'deleted_at',
   ];
 
   protected $casts = [
     'date' => 'date',
     'due_at' => 'date',
     'paid_at' => 'date',
-    'cancelled_at' => 'date',
+    'created_at' => 'datetime',
+    'updated_at' => 'datetime',
+    'deleted_at' => 'datetime',
   ];
 
   public function company()

@@ -26,7 +26,6 @@ return new class extends Migration
       $table->foreignId('status_id')->default(1);
       $table->date('due_at')->nullable();
       $table->date('paid_at')->nullable();
-      $table->date('cancelled_at')->nullable();
       $table->softDeletes();
       $table->timestamps();
     });

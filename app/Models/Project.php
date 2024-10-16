@@ -16,10 +16,15 @@ class Project extends Model
     'principal_id',
     'archived_at',
     'created_at',
+    'updated_at',
+    'deleted_at',
   ];
 
   protected $casts = [
     'archived_at' => 'datetime',
+    'created_at' => 'datetime',
+    'updated_at' => 'datetime',
+    'deleted_at' => 'datetime',
   ];
   
   public function rate()

@@ -10,9 +10,9 @@ new class extends Component {
 
   use WithPagination;
 
-  public $sortBy = 'date';
+  public $sortBy = 'status_id';
 
-  public $sortDirection = 'desc';
+  public $sortDirection = 'asc';
 
   public $search = null;
 
@@ -94,6 +94,9 @@ new class extends Component {
         ->orWhere('title', 'like', '%'. $this->search .'%')
         ->orWhere('text', 'like', '%'. $this->search .'%')
       )
+      ->whereIn('status_id', [1, 2])
+      ->with('company', 'project', 'status')
+      ->orderBy('date', 'desc')
       ->paginate(15);
   }
 
@@ -119,9 +122,10 @@ new class extends Component {
 
   <flux:table class="mt-6" :paginate="$this->invoices">
     <flux:columns>
-      <flux:column class="!pl-2" sortable :sorted="$sortBy === 'number'" :direction="$sortDirection" wire:click="sort('number')">Number</flux:column>
-      <flux:column sortable :sorted="$sortBy === 'title'" :direction="$sortDirection" wire:click="sort('title')">Title</flux:column>
+      <flux:column>Title</flux:column>
+      <flux:column sortable :sorted="$sortBy === 'number'" :direction="$sortDirection" wire:click="sort('number')">Number</flux:column>
       <flux:column sortable :sorted="$sortBy === 'grand_total'" :direction="$sortDirection" wire:click="sort('grand_total')">Total</flux:column>
+      <flux:column>Status</flux:column>
     </flux:columns>
     <flux:rows>
       @foreach ($this->invoices as $invoice)

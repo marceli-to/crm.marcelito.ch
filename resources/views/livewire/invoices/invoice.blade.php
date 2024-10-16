@@ -77,16 +77,29 @@ new class extends Component {
 ?>
 <flux:row>
 
-  <flux:cell class="w-32">
+
+  <flux:cell variant="strong">
+    {{ $invoice->title }}
+    <flux:badge variant="pill" size="sm" color="zinc" inset="top bottom" class="ml-2">
+      {{ $invoice->company->acronym }}
+    </flux:badge>
+  </flux:cell>
+  <flux:cell class="w-24">
     {{ $invoice->number }}
   </flux:cell>
-
-  <flux:cell>
-    {{ $invoice->title }}
+  <flux:cell class="w-36">
+    <div class="flex justify-between items-center">
+      <flux:badge inset="top right" size="sm" class="text-zinc-300">
+        CHF
+      </flux:badge>
+      {{ number_format($invoice->total, 2, '.', '') }}
+    </div>
   </flux:cell>
 
-  <flux:cell class="w-36">
-    {{ number_format($invoice->grand_total, 2, '.', '') }}
+  <flux:cell class="w-32">
+    <flux:badge variant="pill" size="sm" class="uppercase" :color="$invoice->status->color">
+      {{ $invoice->status->label }}
+    </flux:badge>
   </flux:cell>
 
   <flux:cell class="flex justify-end">
@@ -127,13 +140,13 @@ new class extends Component {
         <flux:input label="Title" wire:model="title" />
         <flux:textarea label="Description" rows="auto" wire:model="description" />
         <flux:input label="Amount" wire:model="amount" />
-        <div class="relative space-y-6">
+        {{-- <div class="relative space-y-6">
           <flux:select label="Currency" wire:model="currency_id" placeholder="Choose currency...">
             @foreach ($this->currencies as $currency)
               <option value="{{ $currency->id }}" {{ $currency->id === $this->currency_id ? 'selected' : '' }}>{{ $currency->label }}</option>
             @endforeach
           </flux:select>
-        </div>
+        </div> --}}
         <flux:button type="submit" class="w-full !mt-8" variant="primary">Update Invoice</flux:button>
       </form>
     </flux:modal>

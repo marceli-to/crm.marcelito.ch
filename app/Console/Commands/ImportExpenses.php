@@ -39,6 +39,7 @@ class ImportExpenses extends Command
         'description' => $item['description'],
         'currency_id' => $item['currency'] == 'CHF' ? 1 : 2,
         'amount' => $item['amount'],
+        'receipt' => $item['number'] . '.jpg',
       ]);
     }
   }

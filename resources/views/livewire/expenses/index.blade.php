@@ -148,7 +148,7 @@ new class extends Component {
       <flux:column class="!pl-2" sortable :sorted="$sortBy === 'date'" :direction="$sortDirection" wire:click="sort('date')">Date</flux:column>
       <flux:column sortable :sorted="$sortBy === 'number'" :direction="$sortDirection" wire:click="sort('number')">Number</flux:column>
       <flux:column>Description</flux:column>
-      <flux:column sortable :sorted="$sortBy === 'amount'" :direction="$sortDirection" wire:click="sort('amount')">Amount</flux:column>
+      <flux:column sortable :sorted="$sortBy === 'amount'" :direction="$sortDirection" wire:click="sort('amount')">Total</flux:column>
     </flux:columns>
     <flux:rows>
       @foreach ($this->expenses as $expense)

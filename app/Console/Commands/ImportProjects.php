@@ -3,6 +3,8 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Models\Company;
 use App\Models\Project;
+use App\Models\Status;
+use App\Models\Invoice;
 
 class ImportProjects extends Command
 {
@@ -29,53 +31,69 @@ class ImportProjects extends Command
     // loop over all the data
     foreach ($data as $item)
     {
-      // check if company exists by acronym
-      $company = Company::where('acronym', $item['acronym'])->first();
-      if (!$company) {
-        $company = Company::create([
-          'name' => $item['name'],
-          'acronym' => $item['acronym'],
-          'byline' => $item['byline'],
-          'street' => $item['street'],
-          'zip' => $item['zip'],
-          'city' => $item['city'],
-        ]);
-      }
+      // get or create company
+      $company = Company::firstOrCreate(['acronym' => $item['acronym']], [
+        'name' => $item['name'],
+        'acronym' => $item['acronym'],
+        'byline' => $item['byline'],
+        'street' => $item['street'],
+        'zip' => $item['zip'],
+        'city' => $item['city'],
+      ]);
 
-      if ($item['state_id'] != 6)
+      // set rate
+      $rate = $item['rate'];
+      switch ($rate)
       {
-        $rate = $item['rate'];
-        
-        switch ($rate)
-        {
-          case '100.00':
-            $rate_id = 1;
-            break;
-          case '125.00':
-            $rate_id = 2;
-            break;
-          case '135.00':
-            $rate_id = 3;
-            break;
-          case '150.00':
-            $rate_id = 4;
-            break;
-          default:
-            $rate_id = 3;
-            break;
-        }
-
-
-        $project = Project::create([
-          'name' => $item['title'],
-          'budget' => $item['total'],
-          'rate_id' => $rate_id,
-          'company_id' => $company->id,
-          'principal_id' => $company->id,
-          'archived_at' => $item['state_id'] == 3 ? now() : null,
-          'created_at' => $item['created_at'],
-        ]);
+        case '100.00':
+          $rate_id = 1;
+          break;
+        case '125.00':
+          $rate_id = 2;
+          break;
+        case '135.00':
+          $rate_id = 3;
+          break;
+        case '150.00':
+          $rate_id = 4;
+          break;
+        default:
+          $rate_id = 3;
+          break;
       }
+
+      // create project
+      $project = Project::create([
+        'name' => $item['title'],
+        'budget' => $item['total'],
+        'rate_id' => $rate_id,
+        'company_id' => $company->id,
+        'principal_id' => $company->id,
+        'archived_at' => $item['state_id'] == 3 ? now() : null,
+        'created_at' => $item['created_at'],
+        'updated_at' => $item['updated_at'],
+        'deleted_at' => $item['state_id'] == 6 ? $item['updated_at'] : null,
+      ]);
+
+      // create invoice
+      $invoice = Invoice::create([
+        'date' => $item['date'],
+        'number' => $item['number'],
+        'title' => $item['title'],
+        'text' => $item['text'],
+        'cancellation_reason' => $item['remarks'],
+        'total' => $item['total'],
+        'vat' => $item['vat'],
+        'grand_total' => $item['grandtotal'],
+        'company_id' => $company->id,
+        'project_id' => $project->id,
+        'status_id' => $item['state_id'],
+        'due_at' => $item['date_due'],
+        'paid_at' => $item['date_paid'],
+        'created_at' => $item['created_at'],
+        'updated_at' => $item['updated_at'],
+        'deleted_at' => $item['state_id'] == 6 ? $item['updated_at'] : null,
+      ]);
     }
 
   }

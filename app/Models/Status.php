@@ -8,8 +8,11 @@ class Status extends Model
   use Sushi;
 
   protected $rows = [
-    ['id' => 1, 'label' => 'open'],
-    ['id' => 2, 'label' => 'pending'],
-    ['id' => 3, 'label' => 'closed'],
+    ['id' => 1, 'label' => 'open', 'color' => 'blue'],
+    ['id' => 2, 'label' => 'pending', 'color' => 'amber'],
+    ['id' => 3, 'label' => 'paid', 'color' => 'green'],
+    ['id' => 4, 'label' => 'overdue', 'color' => 'red'],
+    ['id' => 5, 'label' => 'closed', 'color' => 'zinc'],
+    ['id' => 6, 'label' => 'cancelled', 'color' => 'zinc'],
   ];
 }

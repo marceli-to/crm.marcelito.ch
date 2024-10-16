@@ -76,7 +76,6 @@ new class extends Component {
     ]);
     
     Flux::toast('Your changes have been saved.');
-
     $this->modal('project-edit')->close();
   }
 
@@ -220,5 +219,6 @@ new class extends Component {
     <flux:modal name="company-create-{{ $project->id }}" variant="flyout">
       <livewire:widgets.create-company />
     </flux:modal>
+
   </flux:cell>
 </flux:row>
