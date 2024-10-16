@@ -77,16 +77,17 @@ new class extends Component {
 ?>
 <flux:row>
 
-
   <flux:cell variant="strong">
     {{ $invoice->title }}
     <flux:badge variant="pill" size="sm" color="zinc" inset="top bottom" class="ml-2">
       {{ $invoice->company->acronym }}
     </flux:badge>
   </flux:cell>
+
   <flux:cell class="w-24">
     {{ $invoice->number }}
   </flux:cell>
+
   <flux:cell class="w-36">
     <div class="flex justify-between items-center">
       <flux:badge inset="top right" size="sm" class="text-zinc-300">
