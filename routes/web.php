@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PdfController;
 
 // Volt
+Volt::route('/', 'dashboard')->name('dashboard');
 Volt::route('/timer', 'timer.index')->name('timer');
 Volt::route('/projects', 'projects.index')->name('projects');
 Volt::route('/companies', 'companies.index')->name('companies');
