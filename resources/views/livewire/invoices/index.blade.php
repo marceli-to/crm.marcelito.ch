@@ -76,6 +76,18 @@ new class extends Component {
     // Flux::toast('Expense created', variant: 'success');
   }
 
+  public function updateStatus($id, $status_id, $paid_at = null, $cancelled_at = null, $cancelled_reason = null)
+  {
+    $invoice = Invoice::find($id);
+    $invoice->update([
+      'status_id' => $status_id,
+      'paid_at' => $paid_at ?? null,
+      'cancelled_reason' => $cancelled_reason ?? null
+    ]);
+    Flux::modal('invoice-update-status')->close();
+    Flux::toast('Invoice status updated', variant: 'success');
+  }
+
   public function remove($id)
   {
     $invoice = Invoice::find($id);
@@ -86,6 +98,7 @@ new class extends Component {
   }
 
   #[Computed]
+  #[On('invoice_updated')]
   public function invoices()
   {
     return Invoice::query()
@@ -94,7 +107,7 @@ new class extends Component {
         ->orWhere('title', 'like', '%'. $this->search .'%')
         ->orWhere('text', 'like', '%'. $this->search .'%')
       )
-      ->whereIn('status_id', [1, 2])
+      ->whereIn('status_id', [1, 2, 3])
       ->with('company', 'project', 'status')
       ->orderBy('date', 'desc')
       ->paginate(15);
@@ -197,7 +210,6 @@ new class extends Component {
       <flux:button size="sm" icon="squares-plus">Create Invoice</flux:button>
       </div>
   </div>
-
 
   <flux:table class="mt-6" :paginate="$this->invoices">
     <flux:columns>

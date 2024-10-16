@@ -5,6 +5,7 @@ use Livewire\Attributes\Computed;
 use App\Models\Invoice;
 use App\Models\Company;
 use App\Models\Project;
+use App\Models\Status;
 use App\Actions\Expense\DeletedReceipt;
 use App\Actions\Expense\UploadedReceipt;
 
@@ -21,27 +22,45 @@ new class extends Component {
   #[Rule('string|nullable')]
   public $title;
 
+  #[Rule('integer|required')]
+  public $status_id;
+
+  #[Rule('date|nullable')]
+  public $paid_at;
+
   #[Rule('string|nullable')]
-  public $description;
-
-  #[Rule('required')]
-  public $currency_id;
-
-  #[Rule('string|required')]
-  public $amount;
-
-  public $receipt;
+  public $cancelled_reason;
 
   public function mount()
   {
     $this->number = $this->invoice->number;
     $this->date = $this->invoice->date->format('Y-m-d');
     $this->title = $this->invoice->title;
+    $this->status_id = $this->invoice->status_id;
+    $this->paid_at = $this->invoice->paid_at ? $this->invoice->paid_at->format('Y-m-d') : '';
+    $this->cancelled_reason = $this->invoice->cancelled_reason;
   }
 
   public function edit()
   {
     $this->modal('invoice-edit')->show();
+  }
+
+  public function showUpdateStatusModal()
+  {
+    $this->modal('invoice-update-status')->show();
+  }
+
+  public function updateStatus()
+  {
+    $this->invoice->update([
+      'status_id' => $this->status_id,
+      'paid_at' => $this->paid_at !== '' ? $this->paid_at : null,
+      'cancelled_reason' => $this->cancelled_reason ?? null,
+    ]);
+
+    $this->modal('invoice-update-status')->close();
+    $this->dispatch('invoice_updated');
   }
 
   public function update()
@@ -73,6 +92,12 @@ new class extends Component {
   {
     return Project::active()->orderBy('name')->get();
   }
+
+  #[Computed]
+  public function statuses()
+  {
+    return Status::orderBy('name')->get();
+  }
 };
 ?>
 <flux:row>
@@ -98,7 +123,7 @@ new class extends Component {
   </flux:cell>
 
   <flux:cell class="w-32">
-    <flux:badge variant="pill" size="sm" class="uppercase" inset="top bottom" :color="$invoice->status->color">
+    <flux:badge wire:click="showUpdateStatusModal" variant="pill" size="sm" class="cursor-pointer uppercase" inset="top bottom" :color="$invoice->status->color">
       {{ $invoice->status->label }}
     </flux:badge>
   </flux:cell>
@@ -131,6 +156,33 @@ new class extends Component {
       </form>
     </flux:modal>
 
+    <flux:modal name="invoice-update-status" class="min-w-[22rem] space-y-6">
+      <form wire:submit="updateStatus()" class="space-y-6">
+        <div>
+          <flux:heading size="lg">Status</flux:heading>
+          <flux:subheading>Update the status of the invoice.</flux:subheading>
+        </div>
+
+        <flux:select wire:change="$set('status_id', $event.target.value)" placeholder="Choose status...">
+          @foreach ($this->statuses as $status)
+            <option value="{{ $status->id }}" {{ $status->id === $this->status_id ? 'selected' : '' }}>{{ \Str::upper($status->label) }}</option>
+          @endforeach
+        </flux:select>
+
+        @if ($status_id == 3)
+          <flux:input label="Paid at" type="date" wire:model="paid_at" />
+        @endif
+
+        @if ($status_id == 5)
+          <flux:textarea label="Reason" wire:model="cancelled_reason" />
+        @endif
+
+        <flux:button type="submit" class="w-full !mt-8" variant="primary">Update status</flux:button>
+
+
+      </form>
+    </flux:modal>
+
     <flux:modal name="invoice-edit" variant="flyout">
       <form wire:submit="update" class="space-y-6">
         <div>
@@ -139,8 +191,8 @@ new class extends Component {
         </div>
         <flux:input label="Date" type="date" wire:model="date" />
         <flux:input label="Title" wire:model="title" />
-        <flux:textarea label="Description" rows="auto" wire:model="description" />
-        <flux:input label="Amount" wire:model="amount" />
+        {{-- <flux:textarea label="Description" rows="auto" wire:model="description" />
+        <flux:input label="Amount" wire:model="amount" /> --}}
         {{-- <div class="relative space-y-6">
           <flux:select label="Currency" wire:model="currency_id" placeholder="Choose currency...">
             @foreach ($this->currencies as $currency)
