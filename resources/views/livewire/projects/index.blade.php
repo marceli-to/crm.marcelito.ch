@@ -131,6 +131,7 @@ new class extends Component {
 
   <flux:table class="mt-6" :paginate="$this->projects">
     <flux:columns>
+      <flux:column>ID</flux:column>
       <flux:column>Name</flux:column>
       <flux:column sortable :sorted="$sortBy === 'created_at'" :direction="$sortDirection" wire:click="sort('created_at')">Year</flux:column>
       <flux:column>Duration</flux:column>

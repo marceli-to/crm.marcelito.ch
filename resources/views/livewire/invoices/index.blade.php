@@ -88,8 +88,8 @@ new class extends Component {
           <flux:button size="xs" variant="subtle" icon="x-mark" inset="right" wire:click="resetSearch" />
         </x-slot>
       </flux:input>
-      <flux:button size="sm" icon="squares-plus">Create Invoice</flux:button>
-      </div>
+      <flux:button size="sm" icon="squares-plus" href="{{ route('invoices.create') }}">Create Invoice</flux:button>
+    </div>
   </div>
 
   <flux:table class="mt-6" :paginate="$this->invoices">

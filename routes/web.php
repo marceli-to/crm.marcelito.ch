@@ -10,6 +10,7 @@ Volt::route('/projects', 'projects.index')->name('projects');
 Volt::route('/companies', 'companies.index')->name('companies');
 Volt::route('/expenses', 'expenses.index')->name('expenses');
 Volt::route('/invoices', 'invoices.index')->name('invoices');
+Volt::route('/invoices/create', 'invoices.create')->name('invoices.create');
 
 // PDF
 Route::get('/pdf/expense/{expense}', [PdfController::class, 'expense'])->name('pdf.expense');

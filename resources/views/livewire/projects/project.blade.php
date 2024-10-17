@@ -101,6 +101,10 @@ new class extends Component {
 ?>
 <flux:row>
 
+  <flux:cell>
+    {{ $project->id }}
+  </flux:cell>
+
   <flux:cell variant="strong" class="w-1/2 pr-4">
     <a href="#" wire:click.prevent="edit">
       {{ $project->name }}
