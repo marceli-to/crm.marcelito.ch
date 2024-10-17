@@ -16,22 +16,6 @@ new class extends Component {
 
   public $search = null;
 
-  #[Rule('date|required')]
-  public $date = null;
-
-  #[Rule('string|required')]
-  public $title = null;
-
-  #[Rule('string|nullable')]
-  public $description = null;
-
-  #[Rule('required')]
-  public $amount = null;
-
-  #[Rule('required')] 
-  public $currency_id = null;
-
-
   public function mount()
   {
   }
@@ -59,30 +43,17 @@ new class extends Component {
     }
   }
 
-  public function save()
+  public function remove(Invoice $invoice, $cancellation_reason)
   {
-    $this->validate();
-    
-    // $expense = (new CreateExpense())->execute([
-    //   'date' => $this->date,
-    //   'title' => $this->title,
-    //   'description' => $this->description,
-    //   'amount' => $this->amount,
-    //   'currency_id' => $this->currency_id,
-    // ]);
-
-    // $this->reset('date', 'title', 'description', 'amount', 'currency_id', 'receipt');
-    // $this->modal('expense-create')->close();
-    // Flux::toast('Expense created', variant: 'success');
-  }
-  
-  public function remove($id)
-  {
-    $invoice = Invoice::find($id);
+    $invoice->update([
+      'status_id' => 1, 
+      'cancellation_reason' => $cancellation_reason,
+      'paid_at' => null,
+    ]);
     $invoice->delete();
     $this->gotoPage(1);
     $this->search = null;
-    Flux::toast('Invoice deleted.');
+    Flux::toast('Invoice deleted.', variant: 'success');
   }
 
   #[Computed]
@@ -94,11 +65,12 @@ new class extends Component {
       ->when($this->search !== null, fn ($query) => $query->where('number', 'like', '%'. $this->search .'%')
         ->orWhere('title', 'like', '%'. $this->search .'%')
         ->orWhere('text', 'like', '%'. $this->search .'%')
+        ->withTrashed()
       )
       ->whereIn('status_id', [1, 2, 3])
       ->with('company', 'project', 'status')
       ->orderBy('date', 'desc')
-      ->paginate(15);
+      ->paginate(30);
   }
 };
 ?>

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a7f46a522c5855e6765365b0ec98515e",
+    "content-hash": "205176fe54bc4738521fbc563927069c",
     "packages": [
         {
             "name": "barryvdh/laravel-dompdf",
@@ -10057,59 +10057,6 @@
                 }
             ],
             "time": "2024-03-03T12:36:25+00:00"
-        },
-        {
-            "name": "wire-elements/wire-spy",
-            "version": "v0.0.8",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/wire-elements/wire-spy.git",
-                "reference": "130d19331a03d9f10fc8e4e8952a69afedb99491"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/wire-elements/wire-spy/zipball/130d19331a03d9f10fc8e4e8952a69afedb99491",
-                "reference": "130d19331a03d9f10fc8e4e8952a69afedb99491",
-                "shasum": ""
-            },
-            "require": {
-                "livewire/livewire": "^v3.0.0"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "WireElements\\WireSpy\\WireSpyServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "WireElements\\WireSpy\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Philo Hermans",
-                    "email": "me@philo.dev"
-                }
-            ],
-            "description": "Devtools for Livewire",
-            "support": {
-                "issues": "https://github.com/wire-elements/wire-spy/issues",
-                "source": "https://github.com/wire-elements/wire-spy/tree/v0.0.8"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/PhiloNL",
-                    "type": "github"
-                }
-            ],
-            "time": "2024-10-14T21:56:26+00:00"
         }
     ],
     "aliases": [],

@@ -29,7 +29,7 @@ new class extends Component {
   public $paid_at;
 
   #[Rule('string|nullable')]
-  public $cancelled_reason;
+  public $cancellation_reason;
 
   public function mount()
   {
@@ -38,7 +38,7 @@ new class extends Component {
     $this->title = $this->invoice->title;
     $this->status_id = $this->invoice->status_id;
     $this->paid_at = $this->invoice->paid_at ? $this->invoice->paid_at->format('Y-m-d') : '';
-    $this->cancelled_reason = $this->invoice->cancelled_reason;
+    $this->cancellation_reason = $this->invoice->cancellation_reason;
   }
 
   public function edit()
@@ -48,7 +48,7 @@ new class extends Component {
 
   public function showUpdateStatusModal()
   {
-    $this->modal('invoice-update-status')->show();
+    $this->modal('invoice-status')->show();
   }
 
   public function updateStatus()
@@ -56,10 +56,9 @@ new class extends Component {
     $this->invoice->update([
       'status_id' => $this->status_id,
       'paid_at' => $this->paid_at !== '' ? $this->paid_at : null,
-      'cancelled_reason' => $this->cancelled_reason ?? null,
     ]);
 
-    $this->modal('invoice-update-status')->close();
+    $this->modal('invoice-status')->close();
     $this->dispatch('invoice_updated');
   }
 
@@ -79,6 +78,16 @@ new class extends Component {
   public function remove()
   {
     $this->modal('invoice-remove')->show();
+  }
+
+  public function restore($id)
+  {
+    $invoice = Invoice::withTrashed()->find($id);
+    $invoice->update([
+      'cancellation_reason' => null,
+    ]);
+    $invoice->restore();
+    $this->invoice->refresh();
   }
 
   #[Computed]
@@ -123,29 +132,41 @@ new class extends Component {
   </flux:cell>
 
   <flux:cell class="w-32">
-    <flux:badge wire:click="showUpdateStatusModal" variant="pill" size="sm" class="cursor-pointer uppercase" inset="top bottom" :color="$invoice->status->color">
-      {{ $invoice->status->label }}
-    </flux:badge>
+    @if ($invoice->deleted_at)
+      <flux:badge variant="pill" size="sm" class="uppercase" inset="top bottom" color="red">
+        Cancelled
+      </flux:badge>
+    @else
+      <flux:badge wire:click="showUpdateStatusModal" variant="pill" size="sm" class="cursor-pointer uppercase" inset="top bottom" :color="$invoice->status->color">
+        {{ $invoice->status->label }}
+      </flux:badge>
+    @endif
   </flux:cell>
 
   <flux:cell class="flex justify-end">
+
     <flux:dropdown align="end">
       <flux:button variant="ghost" size="sm" icon="ellipsis-horizontal" inset="top bottom"></flux:button>
       <flux:menu class="min-w-32">
         <flux:menu.item icon="pencil-square" wire:click="edit">Edit</flux:menu.item>
         <flux:menu.item icon="document-arrow-down" href="{{ route('pdf.invoice', $invoice) }}" target="_blank">PDF</flux:menu.item>
-        <flux:menu.item icon="trash" variant="danger" wire:click="remove">Remove</flux:menu.item>
+        @if ($invoice->deleted_at)
+          <flux:menu.item icon="arrow-path" wire:click="restore({{ $invoice->id }})">Restore</flux:menu.item>
+        @else
+          <flux:menu.item icon="trash" variant="danger" wire:click="remove">Remove</flux:menu.item>
+        @endif
       </flux:menu>
     </flux:dropdown>
 
     <flux:modal name="invoice-remove" class="min-w-[22rem] space-y-6">
-      <form class="space-y-6" wire:submit="$parent.remove({{ $invoice->id }})">
+      <form class="space-y-6" wire:submit="$parent.remove({{ $invoice->id }}, '{{ $cancellation_reason }}')">
         <div>
           <flux:heading size="lg">Remove invoice?</flux:heading>
-          <flux:subheading>
+          <flux:subheading class="mb-4">
             <p>You're about to delete this invoice.</p>
             <p>This action cannot be reversed.</p>
           </flux:subheading>
+          <flux:textarea rows="2" label="Cancellation reason" wire:change="$set('cancellation_reason', $event.target.value)" />
         </div>
         <div class="flex justify-between gap-2">
           <flux:modal.close>
@@ -156,7 +177,7 @@ new class extends Component {
       </form>
     </flux:modal>
 
-    <flux:modal name="invoice-update-status" class="min-w-[22rem] space-y-6">
+    <flux:modal name="invoice-status" class="min-w-[22rem] space-y-6">
       <form wire:submit="updateStatus()" class="space-y-6">
         <div>
           <flux:heading size="lg">Status</flux:heading>
@@ -173,12 +194,7 @@ new class extends Component {
           <flux:input label="Paid at" type="date" wire:model="paid_at" />
         @endif
 
-        @if ($status_id == 5)
-          <flux:textarea label="Reason" wire:model="cancelled_reason" />
-        @endif
-
         <flux:button type="submit" class="w-full !mt-8" variant="primary">Update status</flux:button>
-
 
       </form>
     </flux:modal>

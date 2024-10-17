@@ -11,7 +11,5 @@ class Status extends Model
     ['id' => 1, 'label' => 'open', 'color' => 'blue'],
     ['id' => 2, 'label' => 'pending', 'color' => 'amber'],
     ['id' => 3, 'label' => 'paid', 'color' => 'green'],
-    ['id' => 4, 'label' => 'overdue', 'color' => 'red'],
-    ['id' => 5, 'label' => 'cancelled', 'color' => 'zinc'],
   ];
 }

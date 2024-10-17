@@ -78,7 +78,7 @@ class ImportProjects extends Command
       // create invoice
       // the new version does not have a status_id of 5 (closed), so we need to set it to 3 (paid)
       // we also need to set the status_id of 6 (cancelled) to 5 (cancelled)
-      $status_id = $item['state_id'] == 5 ? 3 : ($item['state_id'] == 6 ? 5 : $item['state_id']);
+      $status_id = $item['state_id'] == 5 ? 3 : ($item['state_id'] == 6 ? 1 : $item['state_id']);
       $invoice = Invoice::create([
         'date' => $item['date'],
         'number' => $item['number'],

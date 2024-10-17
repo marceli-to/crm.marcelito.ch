@@ -1,0 +1,25 @@
+# SQL Statement for importing invoices from the old database
+SELECT 
+    invoices.*,
+    MAX(invoice_positions.rate) AS rate,
+    clients.name,
+    clients.acronym,
+    clients.byline,
+    clients.street,
+    clients.zip,
+    clients.city
+FROM 
+    `invoices`
+LEFT JOIN 
+    invoice_positions ON invoices.id = invoice_positions.invoice_id
+LEFT JOIN 
+    clients ON invoices.client_id = clients.id
+GROUP BY 
+    invoices.id,
+    invoices.number,
+    clients.name,
+    clients.acronym,
+    clients.byline,
+    clients.street,
+    clients.zip,
+    clients.city
